@@ -22,6 +22,8 @@ jobs:
     name: Analyze (JavaScript/TypeScript)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      CODEQL_UPLOAD: ${{ vars.CODEQL_UPLOAD || 'false' }}
 
     steps:
       - name: Checkout
@@ -36,4 +38,23 @@ jobs:
         uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL analysis
+        id: analyze
         uses: github/codeql-action/analyze@v3
+        with:
+          output: sarif-results
+          upload: ${{ env.CODEQL_UPLOAD == 'true' && github.event_name != 'pull_request' }}
+
+      - name: Upload SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif-${{ github.run_id }}
+          path: sarif-results/**/*.sarif
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload guidance
+        if: env.CODEQL_UPLOAD != 'true'
+        run: |
+          echo "::notice::CodeQL upload to GitHub Code Scanning is disabled."
+          echo "::notice::After enabling Code Scanning in repository settings, set repo variable CODEQL_UPLOAD=true."
