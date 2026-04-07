@@ -2,24 +2,6 @@
 
 An interactive Electron desktop app that helps UNT students find squirrels on campus. Built with real UNT tree inventory data (5,000+ trees), an AI-powered "Squirrel Scout" assistant via Ollama, and a Super Mario Bros 3-inspired retro game aesthetic.
 
-## Screenshots
-
-### Campus Map with Tree Data
-![Map View](docs/screenshots/map-view.png)
-*5,000+ trees plotted on the UNT campus map. Red dots = nut-producing trees (squirrel magnets), green dots = other species. Gold stars mark memorial trees. Pink circles highlight undiscovered squirrel hotspot zones.*
-
-### Badge Collection
-![Badges](docs/screenshots/badges-view.png)
-*24 achievement badges to earn. "First Steps" for your first discovery, "Sharp Eye" for your first sighting, and 22 more challenges from "Nut Detective" to "Completionist".*
-
-### AI-Generated Quests
-![Quests](docs/screenshots/quest-complete.png)
-*The Squirrel Scout AI generates unique quests using Ollama. Complete quests for +300 points. Score shown in the SMB3-style HUD at top.*
-
-### Field Guide
-![Field Guide](docs/screenshots/field-guide.png)
-*Pokédex-style field guide with all 16 discovery zones. Click any entry to fly the map to that location. Locked zones show "???" until you discover them.*
-
 ## Features
 
 - **Interactive Campus Map** — MapLibre GL map with 5,018 UNT trees, color-coded by species
@@ -107,6 +89,24 @@ NODE_ENV=development npx electron .
 npm test           # Run all 62 tests
 npm run test:watch # Watch mode
 ```
+
+## Screenshots
+
+### Campus Map with Tree Data
+![Map View](docs/screenshots/map-view.png)
+*5,000+ trees plotted on the UNT campus map. Red dots = nut-producing trees (squirrel magnets), green dots = other species. Gold stars mark memorial trees. Pink circles highlight undiscovered squirrel hotspot zones.*
+
+### Badge Collection
+![Badges](docs/screenshots/badges-view.png)
+*24 achievement badges to earn. "First Steps" for your first discovery, "Sharp Eye" for your first sighting, and 22 more challenges from "Nut Detective" to "Completionist".*
+
+### AI-Generated Quests
+![Quests](docs/screenshots/quest-complete.png)
+*The Squirrel Scout AI generates unique quests using Ollama. Complete quests for +300 points. Score shown in the SMB3-style HUD at top.*
+
+### Field Guide
+![Field Guide](docs/screenshots/field-guide.png)
+*Pokédex-style field guide with all 16 discovery zones. Click any entry to fly the map to that location. Locked zones show "???" until you discover them.*
 
 ## How to Play
 

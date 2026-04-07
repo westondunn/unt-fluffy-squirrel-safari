@@ -8,6 +8,7 @@ import type { Hotspot } from '@shared/types';
 import { QuestOverlay } from './components/QuestOverlay';
 import { SightingModal } from './components/SightingModal';
 import { ToastContainer } from './components/Toast';
+import { api } from './lib/api';
 
 export default function App() {
   const { player, badges, hotspots, quests, ollamaOnline, toasts, refresh, processEvents, removeToast } = useGameState();
@@ -21,7 +22,7 @@ export default function App() {
 
   const handleDiscoverZone = async (hotspotId: number) => {
     try {
-      const events = await window.api.discoverZone(hotspotId);
+      const events = await api.discoverZone(hotspotId);
       await processEvents(events);
     } catch (err) {
       console.error('Failed to discover zone:', err);
@@ -31,7 +32,7 @@ export default function App() {
   const handleLogSighting = async (hotspotId: number | null, notes: string) => {
     try {
       // Get current map center (best approximation for lat/lon without GPS)
-      const events = await window.api.logSighting({
+      const events = await api.logSighting({
         tree_id: null,
         hotspot_id: hotspotId,
         lat: 33.2100,
@@ -49,7 +50,7 @@ export default function App() {
 
   const handleGenerateQuest = async () => {
     try {
-      const result = await window.api.ollamaGenerateQuest();
+      const result = await api.ollamaGenerateQuest();
       if (result.ok) {
         await refresh();
       }
@@ -60,7 +61,7 @@ export default function App() {
 
   const handleCompleteQuest = async (questId: number) => {
     try {
-      const events = await window.api.completeQuest(questId);
+      const events = await api.completeQuest(questId);
       await processEvents(events);
     } catch (err) {
       console.error('Failed to complete quest:', err);

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import maplibregl from 'maplibre-gl';
-import type { Hotspot, Tree } from '@shared/types';
+import type { Hotspot } from '@shared/types';
+import { api } from '../lib/api';
 
 const UNT_LAT = 33.2100;
 const UNT_LON = -97.1525;
@@ -43,7 +44,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
   const loadTrees = useCallback(async (map: maplibregl.Map) => {
     const bounds = map.getBounds();
     try {
-      const trees = await window.api.queryTrees({
+      const trees = await api.queryTrees({
         minLat: bounds.getSouth(),
         maxLat: bounds.getNorth(),
         minLon: bounds.getWest(),

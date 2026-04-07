@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { GameEvent } from '../lib/api';
+import { api, type GameEvent } from '../lib/api';
 import type { Player, Badge, Hotspot, Quest } from '@shared/types';
 
 export interface Toast {
@@ -33,11 +33,11 @@ export function useGameState(): GameState {
   const refresh = useCallback(async () => {
     try {
       const [p, b, h, q, status] = await Promise.all([
-        window.api.getPlayer(),
-        window.api.getBadges(),
-        window.api.getAllHotspots(),
-        window.api.getQuests(),
-        window.api.ollamaStatus(),
+        api.getPlayer(),
+        api.getBadges(),
+        api.getAllHotspots(),
+        api.getQuests(),
+        api.ollamaStatus(),
       ]);
       setPlayer(p);
       setBadges(b);

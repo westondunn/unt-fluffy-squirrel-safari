@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { OllamaMessage } from '@shared/types';
+import { api } from '../lib/api';
 
 interface OllamaState {
   messages: OllamaMessage[];
@@ -18,7 +19,7 @@ export function useOllama(): OllamaState {
     setMessages(nextMessages);
     setLoading(true);
     try {
-      const result = await window.api.ollamaChat(nextMessages);
+      const result = await api.ollamaChat(nextMessages);
       if (result.ok && result.response) {
         const assistantMsg: OllamaMessage = { role: 'assistant', content: result.response };
         setMessages(prev => [...prev, assistantMsg]);
