@@ -30,10 +30,10 @@ function execToRows<T>(results: QueryExecResult[]): T[] {
 // ── lifecycle ─────────────────────────────────────────────────────────────────
 
 export async function initDB(): Promise<void> {
-  const isDev = process.env.NODE_ENV === 'development';
-  dbPath = isDev
-    ? path.resolve(__dirname, '..', '..', 'data', 'squirrels.db')
-    : path.join(process.resourcesPath, 'squirrels.db');
+  // Try dev path first (data/ in project root), then packaged path
+  const devPath = path.resolve(__dirname, '..', '..', 'data', 'squirrels.db');
+  const prodPath = path.join(process.resourcesPath || '', 'squirrels.db');
+  dbPath = fs.existsSync(devPath) ? devPath : prodPath;
 
   const SQL = await initSqlJs();
   const buf = fs.readFileSync(dbPath);
