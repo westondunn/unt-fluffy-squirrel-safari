@@ -215,6 +215,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         score: props.score,
         species: '',
         notes: props.notes,
+        discovered: Boolean(props.discovered),
       };
       setPopup({ hotspot, x: point.x, y: point.y });
     });
