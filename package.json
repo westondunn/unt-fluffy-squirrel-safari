@@ -1,0 +1,36 @@
+{
+  "name": "squirrel-safari",
+  "version": "0.1.0",
+  "description": "Find squirrels on UNT campus",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:main": "tsc -p tsconfig.node.json",
+    "build:db": "tsx scripts/build-db.ts",
+    "electron:dev": "concurrently \"vite\" \"tsc -p tsconfig.node.json --watch\" \"electron .\"",
+    "start": "npm run build && npm run build:main && electron .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "package": "npm run build && npm run build:main && electron-builder"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.4",
+    "tsx": "^4.19.2"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "maplibre-gl": "^5.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

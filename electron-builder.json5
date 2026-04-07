@@ -1,0 +1,17 @@
+{
+  appId: "com.squirrelsafari.app",
+  productName: "Squirrel Safari",
+  directories: {
+    output: "release",
+  },
+  files: [
+    "dist/**/*",
+    "data/squirrels.db",
+  ],
+  extraResources: [
+    { from: "data/squirrels.db", to: "squirrels.db" },
+  ],
+  win: {
+    target: "nsis",
+  },
+}
