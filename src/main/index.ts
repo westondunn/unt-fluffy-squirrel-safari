@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import { initDB, closeDB } from './db';
+import { registerIPC } from './ipc';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -10,6 +12,7 @@ function createWindow() {
     minWidth: 960,
     minHeight: 600,
     title: 'Squirrel Safari',
+    backgroundColor: '#1a1a2e',
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'index.js'),
       contextIsolation: true,
@@ -29,8 +32,13 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  await initDB();
+  registerIPC();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
+  closeDB();
   app.quit();
 });
