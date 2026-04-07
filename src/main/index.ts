@@ -11,7 +11,7 @@ function createWindow() {
     height: 800,
     minWidth: 960,
     minHeight: 600,
-    title: 'Squirrel Safari',
+    title: 'UNT Fluffy Squirrel Safari',
     backgroundColor: '#5C94FC',
     webPreferences: {
       preload: path.join(__dirname, '..', 'preload', 'index.js'),

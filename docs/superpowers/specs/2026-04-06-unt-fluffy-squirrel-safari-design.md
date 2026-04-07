@@ -1,4 +1,4 @@
-# Squirrel Safari — Design Spec
+# UNT Fluffy Squirrel Safari — Design Spec
 
 ## Overview
 
@@ -118,7 +118,7 @@ Simple bounding-box math on lat/lon columns. No SpatiaLite needed for 5K points.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ [SQUIRREL SAFARI]          SCORE: 2,450  LV.5  [8/24]  │  ← Top bar (hot pink)
+│ [UNT FLUFFY SQUIRREL SAFARI]          SCORE: 2,450  LV.5  [8/24]  │  ← Top bar (hot pink)
 ├────────────────────────────────────┬────────────────────┤
 │                                    │ [CHAT|GUIDE|BADGES]│  ← Tab bar
 │                                    │                    │

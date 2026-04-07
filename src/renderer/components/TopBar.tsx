@@ -33,7 +33,7 @@ export function TopBar({ player, badges, ollamaOnline }: TopBarProps) {
           color: '#F8D830',
           textShadow: '2px 2px 0px #A87820',
         }}>
-          SQUIRREL SAFARI
+          UNT FLUFFY SQUIRREL SAFARI
         </span>
       </div>
 

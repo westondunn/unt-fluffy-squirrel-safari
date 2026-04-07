@@ -1,6 +1,6 @@
 {
-  appId: "com.squirrelsafari.app",
-  productName: "Squirrel Safari",
+  appId: "edu.unt.fluffysquirrelsafari",
+  productName: "UNT Fluffy Squirrel Safari",
   directories: {
     output: "release",
   },

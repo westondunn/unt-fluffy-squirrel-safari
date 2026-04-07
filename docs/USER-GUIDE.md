@@ -1,6 +1,6 @@
-# Squirrel Safari — User Guide
+# UNT Fluffy Squirrel Safari — User Guide
 
-Welcome to Squirrel Safari! This guide will help you find those funny little fluffy squirrels on the UNT campus.
+Welcome to UNT Fluffy Squirrel Safari! This guide will help you find those funny little fluffy squirrels on the UNT campus.
 
 ---
 

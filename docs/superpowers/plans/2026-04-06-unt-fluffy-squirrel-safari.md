@@ -1,4 +1,4 @@
-# Squirrel Safari Implementation Plan
+# UNT Fluffy Squirrel Safari Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -13,7 +13,7 @@
 ## File Structure
 
 ```
-squirrel-finder/
+unt-fluffy-squirrel-safari/
 ├── package.json
 ├── vite.config.ts
 ├── electron-builder.json5
@@ -83,7 +83,7 @@ squirrel-finder/
 
 ```json
 {
-  "name": "squirrel-safari",
+  "name": "unt-fluffy-squirrel-safari",
   "version": "0.1.0",
   "description": "Find squirrels on UNT campus",
   "main": "dist/main/index.js",
@@ -192,8 +192,8 @@ export default defineConfig({
 
 ```json5
 {
-  appId: "com.squirrelsafari.app",
-  productName: "Squirrel Safari",
+  appId: "edu.unt.fluffysquirrelsafari",
+  productName: "UNT Fluffy Squirrel Safari",
   directories: {
     output: "release",
   },
@@ -305,7 +305,7 @@ function createWindow() {
     height: 800,
     minWidth: 960,
     minHeight: 600,
-    title: 'Squirrel Safari',
+    title: 'UNT Fluffy Squirrel Safari',
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'index.js'),
       contextIsolation: true,
@@ -370,7 +370,7 @@ Create `src/renderer/index.html`:
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Squirrel Safari</title>
+  <title>UNT Fluffy Squirrel Safari</title>
   <link href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css" rel="stylesheet" />
 </head>
 <body>
@@ -400,7 +400,7 @@ Create `src/renderer/App.tsx`:
 export default function App() {
   return (
     <div style={{ background: '#1a1a2e', color: '#eee', fontFamily: '"Courier New", monospace', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <h1 style={{ color: '#e94560' }}>SQUIRREL SAFARI</h1>
+      <h1 style={{ color: '#e94560' }}>UNT FLUFFY SQUIRREL SAFARI</h1>
     </div>
   );
 }
@@ -423,7 +423,7 @@ npm run build:main
 npx electron .
 ```
 
-Expected: Electron window opens showing "SQUIRREL SAFARI" in hot pink on dark navy background.
+Expected: Electron window opens showing "UNT FLUFFY SQUIRREL SAFARI" in hot pink on dark navy background.
 
 - [ ] **Step 12: Commit**
 
@@ -1651,7 +1651,7 @@ function createWindow() {
     height: 800,
     minWidth: 960,
     minHeight: 600,
-    title: 'Squirrel Safari',
+    title: 'UNT Fluffy Squirrel Safari',
     backgroundColor: '#1a1a2e',
     webPreferences: {
       preload: path.join(__dirname, 'preload', 'index.js'),
@@ -1895,7 +1895,7 @@ export default function TopBar({ player, badges, ollamaOnline }: Props) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 18 }}>&#x1F43F;&#xFE0F;</span>
-        <span>SQUIRREL SAFARI</span>
+        <span>UNT FLUFFY SQUIRREL SAFARI</span>
       </div>
       <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
         <span>SCORE: {player?.score ?? 0}</span>
@@ -2034,7 +2034,7 @@ Run:
 npm run dev
 ```
 
-Open `http://localhost:5173` in a browser. Expected: Hot pink top bar with "SQUIRREL SAFARI" title, dark map placeholder area on left, sidebar with CHAT/GUIDE/BADGES tabs on right.
+Open `http://localhost:5173` in a browser. Expected: Hot pink top bar with "UNT FLUFFY SQUIRREL SAFARI" title, dark map placeholder area on left, sidebar with CHAT/GUIDE/BADGES tabs on right.
 
 - [ ] **Step 8: Commit**
 
@@ -3126,7 +3126,7 @@ Expected: Full app with map, hotspots, chat, field guide, badges, quest overlay,
 
 ```bash
 git add -A
-git commit -m "feat: fully integrated Squirrel Safari app"
+git commit -m "feat: fully integrated UNT Fluffy Squirrel Safari app"
 ```
 
 ---

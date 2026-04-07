@@ -1,4 +1,4 @@
-# Squirrel Safari
+# UNT Fluffy Squirrel Safari
 
 An interactive Electron desktop app that helps UNT students find squirrels on campus. Built with real UNT tree inventory data (5,000+ trees), an AI-powered "Squirrel Scout" assistant via Ollama, and a Super Mario Bros 3-inspired retro game aesthetic.
 
@@ -58,7 +58,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 ```bash
 # Clone the repo
 git clone <repo-url>
-cd squirrel-finder
+cd unt-fluffy-squirrel-safari
 
 # Install dependencies
 npm install
@@ -161,7 +161,7 @@ Tree data from the University of North Texas campus tree inventory — 5,053 sur
 ## Project Structure
 
 ```
-squirrel-finder/
+unt-fluffy-squirrel-safari/
 ├── data/                    # Tree CSV + built SQLite database
 ├── scripts/build-db.ts      # Data pipeline: CSV -> SQLite
 ├── src/
