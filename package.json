@@ -15,22 +15,21 @@
     "package": "npm run build && npm run build:main && electron-builder"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.2",
     "electron": "^33.3.1",
     "electron-builder": "^25.1.8",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
-    "vitest": "^3.0.4",
-    "tsx": "^4.19.2"
+    "vitest": "^3.0.4"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
     "maplibre-gl": "^5.1.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sql.js": "^1.14.1"
   }
 }

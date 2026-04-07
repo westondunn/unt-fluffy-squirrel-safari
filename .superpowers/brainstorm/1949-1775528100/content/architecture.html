@@ -1,0 +1,104 @@
+<h2>Architecture Overview</h2>
+<p class="subtitle">Squirrel Safari — Monolith Electron App</p>
+
+<div class="mockup">
+  <div class="mockup-header">System Architecture</div>
+  <div class="mockup-body" style="padding: 24px; font-family: 'Courier New', monospace; font-size: 12px; background: #1a1a2e; color: #e94560;">
+    <pre style="margin: 0; line-height: 1.8; color: #eee;">
+┌─────────────────────────────────────────────────────────┐
+│  <span style="color: #e94560; font-weight: bold;">ELECTRON APP</span>                                            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  <span style="color: #fdcb6e;">RENDERER PROCESS</span> (React + MapLibre GL)         │    │
+│  │                                                 │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌───────────────┐   │    │
+│  │  │ Map View │ │ Chat     │ │ Safari Panel  │   │    │
+│  │  │ MapLibre │ │ Sidebar  │ │ Badges/Quests │   │    │
+│  │  │ GL + Tree│ │ (Ollama) │ │ Field Guide   │   │    │
+│  │  │ Markers  │ │          │ │ Sightings     │   │    │
+│  │  └──────────┘ └──────────┘ └───────────────┘   │    │
+│  └──────────────────┬──────────────────────────────┘    │
+│                     │ IPC Bridge                        │
+│  ┌──────────────────┴──────────────────────────────┐    │
+│  │  <span style="color: #fdcb6e;">MAIN PROCESS</span>                                  │    │
+│  │                                                 │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌───────────────┐   │    │
+│  │  │ SQLite   │ │ Ollama   │ │ Game Engine   │   │    │
+│  │  │ Tree DB  │ │ Client   │ │ Quest Gen     │   │    │
+│  │  │ Sightings│ │ Local or │ │ Badge Logic   │   │    │
+│  │  │ Game Data│ │ Remote   │ │ Scoring       │   │    │
+│  │  └──────────┘ └──────────┘ └───────────────┘   │    │
+│  └─────────────────────────────────────────────────┘    │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+         │                        │
+         ▼                        ▼
+  ┌──────────────┐      ┌──────────────────┐
+  │ <span style="color: #0f3460; background: #e94560; padding: 0 4px;">squirrels.db</span> │      │ <span style="color: #0f3460; background: #e94560; padding: 0 4px;">Ollama API</span>       │
+  │ SQLite File  │      │ localhost:11434   │
+  │              │      │ or remote URL     │
+  └──────────────┘      └──────────────────┘
+    </pre>
+  </div>
+</div>
+
+<div style="margin-top: 20px;">
+  <div class="mockup">
+    <div class="mockup-header">App Layout — Retro Game UI</div>
+    <div class="mockup-body" style="padding: 0; background: #1a1a2e; min-height: 300px; display: flex; flex-direction: column;">
+      <!-- Top bar -->
+      <div style="background: #e94560; padding: 6px 16px; display: flex; justify-content: space-between; align-items: center; font-family: 'Courier New', monospace;">
+        <div style="color: #1a1a2e; font-weight: bold; font-size: 14px; letter-spacing: 2px;">&#x1F43F;&#xFE0F; SQUIRREL SAFARI</div>
+        <div style="display: flex; gap: 12px; font-size: 11px; color: #1a1a2e; font-weight: bold;">
+          <span>SCORE: 2,450</span>
+          <span>LV.5</span>
+          <span>&#x1F3C5; 8/24</span>
+        </div>
+      </div>
+      <!-- Main content -->
+      <div style="display: flex; flex: 1;">
+        <!-- Map area -->
+        <div style="flex: 1; background: #16213e; position: relative; min-height: 250px; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #0f3460; font-size: 48px; font-weight: bold; opacity: 0.3;">MAP</div>
+          <!-- Hotspot markers -->
+          <div style="position: absolute; top: 40px; left: 60px; width: 20px; height: 20px; background: #e94560; border-radius: 50%; animation: pulse 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 10px;">&#x1F333;</div>
+          <div style="position: absolute; top: 120px; left: 180px; width: 20px; height: 20px; background: #fdcb6e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">&#x1F333;</div>
+          <div style="position: absolute; bottom: 60px; right: 100px; width: 20px; height: 20px; background: #e94560; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">&#x1F43F;</div>
+          <!-- Quest overlay -->
+          <div style="position: absolute; bottom: 12px; left: 12px; background: rgba(26,26,46,0.9); border: 1px solid #e94560; border-radius: 4px; padding: 8px 12px; font-family: 'Courier New', monospace; font-size: 10px; color: #fdcb6e;">
+            &#x1F3AF; QUEST: Find the pecan grove near Willis Library
+          </div>
+        </div>
+        <!-- Right sidebar -->
+        <div style="width: 240px; background: #1a1a2e; border-left: 2px solid #e94560; display: flex; flex-direction: column;">
+          <!-- Tab bar -->
+          <div style="display: flex; border-bottom: 2px solid #e94560; font-family: 'Courier New', monospace; font-size: 10px;">
+            <div style="flex: 1; padding: 8px; text-align: center; background: #e94560; color: #1a1a2e; font-weight: bold;">CHAT</div>
+            <div style="flex: 1; padding: 8px; text-align: center; color: #e94560;">GUIDE</div>
+            <div style="flex: 1; padding: 8px; text-align: center; color: #e94560;">BADGES</div>
+          </div>
+          <!-- Chat area -->
+          <div style="flex: 1; padding: 10px; font-family: 'Courier New', monospace; font-size: 10px; color: #eee; overflow: auto;">
+            <div style="margin-bottom: 8px;">
+              <span style="color: #e94560;">YOU:</span> Where are squirrels near the union?
+            </div>
+            <div style="margin-bottom: 8px;">
+              <span style="color: #fdcb6e;">&#x1F43F; SCOUT:</span> The Student Union area has a dense cluster of Live Oaks and Pecans — prime squirrel territory! Head to the NE corner...
+            </div>
+          </div>
+          <!-- Input -->
+          <div style="padding: 8px; border-top: 1px solid #333;">
+            <div style="background: #16213e; border: 1px solid #e94560; border-radius: 4px; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; color: #666;">Ask the Squirrel Scout...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(233,69,96,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(233,69,96,0); }
+}
+</style>
