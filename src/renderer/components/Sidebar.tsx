@@ -15,11 +15,12 @@ interface SidebarProps {
   chatLoading: boolean;
   onSendChat: (text: string) => void;
   onClearChat: () => void;
+  onFocusHotspot?: (hotspot: Hotspot) => void;
 }
 
 export function Sidebar({
   badges, hotspots, ollamaOnline,
-  chatMessages, chatLoading, onSendChat, onClearChat,
+  chatMessages, chatLoading, onSendChat, onClearChat, onFocusHotspot,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<Tab>('CHAT');
 
@@ -78,7 +79,7 @@ export function Sidebar({
           />
         )}
         {activeTab === 'GUIDE' && (
-          <FieldGuideTab hotspots={hotspots} />
+          <FieldGuideTab hotspots={hotspots} onFocusHotspot={onFocusHotspot} />
         )}
         {activeTab === 'BADGES' && (
           <BadgesTab badges={badges} />

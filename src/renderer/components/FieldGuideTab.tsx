@@ -3,16 +3,16 @@ import type { Hotspot } from '@shared/types';
 
 interface FieldGuideTabProps {
   hotspots: Hotspot[];
+  onFocusHotspot?: (hotspot: Hotspot) => void;
 }
 
 function acornRating(score: number, discovered: boolean): string {
-  if (!discovered) return '■■■■■';
+  if (!discovered) return '■ ■ ■ ■ ■';
   const acorns = Math.max(0, Math.min(5, Math.round(score)));
   return '🌰'.repeat(acorns) + '·'.repeat(5 - acorns);
 }
 
-export function FieldGuideTab({ hotspots }: FieldGuideTabProps) {
-  // Sort by id for stable numbering
+export function FieldGuideTab({ hotspots, onFocusHotspot }: FieldGuideTabProps) {
   const sorted = [...hotspots].sort((a, b) => a.id - b.id);
   const discovered = sorted.filter(h => h.discovered).length;
 
@@ -21,105 +21,134 @@ export function FieldGuideTab({ hotspots }: FieldGuideTabProps) {
       {/* Header */}
       <div style={{
         padding: '10px 12px',
-        borderBottom: '1px solid #16213e',
+        borderBottom: '4px solid #C84C0C',
         fontFamily: '"Courier New", monospace',
         fontSize: '11px',
         fontWeight: 'bold',
         letterSpacing: '2px',
-        color: '#fdcb6e',
+        color: '#F8D830',
+        background: '#000',
         flexShrink: 0,
       }}>
-        FIELD GUIDE — {discovered}/{sorted.length} DISCOVERED
+        📖 FIELD GUIDE — {discovered}/{sorted.length}
       </div>
 
-      {/* Grid */}
+      {/* List */}
       <div style={{
         flex: 1,
         overflowY: 'auto',
-        padding: '10px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '8px',
-        alignContent: 'start',
+        padding: '8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
       }}>
         {sorted.map((hotspot, idx) => {
           const num = String(idx + 1).padStart(2, '0');
-          const isDiscovered = hotspot.discovered;
+          const disc = hotspot.discovered;
 
           return (
-            <div
+            <button
               key={hotspot.id}
+              onClick={() => onFocusHotspot?.(hotspot)}
               style={{
-                background: '#16213e',
-                border: `1px solid ${isDiscovered ? '#533483' : '#333'}`,
-                borderRadius: '4px',
-                padding: '8px',
+                display: 'flex',
+                alignItems: 'stretch',
+                gap: '0',
+                background: disc ? '#F8B800' : '#555',
+                border: `3px solid ${disc ? '#A87820' : '#333'}`,
+                borderRadius: '2px',
+                padding: '0',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s',
+                textAlign: 'left',
+                fontFamily: '"Courier New", monospace',
+                boxShadow: disc
+                  ? '2px 2px 0px #A87820'
+                  : '2px 2px 0px #222',
+                transition: 'transform 0.1s',
+                width: '100%',
               }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = '#e94560';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = isDiscovered ? '#533483' : '#333';
-              }}
+              onMouseDown={e => { (e.currentTarget as HTMLElement).style.transform = 'translate(2px, 2px)'; }}
+              onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = ''; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; }}
             >
-              {/* Number */}
+              {/* Number badge */}
               <div style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '9px',
-                fontWeight: 'bold',
-                letterSpacing: '2px',
-                color: '#e94560',
-                marginBottom: '4px',
-              }}>
-                #{num}
-              </div>
-
-              {/* Name */}
-              <div style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                color: isDiscovered ? '#eee' : '#555',
-                marginBottom: '5px',
-                lineHeight: '1.3',
-                minHeight: '28px',
+                width: '36px',
+                minWidth: '36px',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
+                background: disc ? '#E40058' : '#333',
+                color: '#FCF8FC',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                letterSpacing: '1px',
               }}>
-                {isDiscovered ? hotspot.name : '???'}
+                {num}
               </div>
 
-              {/* Acorn rating */}
-              <div style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '10px',
-                letterSpacing: '1px',
-                marginBottom: '4px',
-                color: isDiscovered ? '#fdcb6e' : '#444',
-              }}>
-                {acornRating(hotspot.score, isDiscovered)}
+              {/* Content */}
+              <div style={{ flex: 1, padding: '8px 10px' }}>
+                {/* Name */}
+                <div style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: disc ? '#38180C' : '#888',
+                  letterSpacing: '1px',
+                  marginBottom: '3px',
+                }}>
+                  {disc ? hotspot.name : '??? UNKNOWN ZONE'}
+                </div>
+
+                {/* Stats row */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}>
+                  {/* Acorn rating */}
+                  <span style={{
+                    fontSize: '10px',
+                    letterSpacing: '1px',
+                    color: disc ? '#38180C' : '#666',
+                  }}>
+                    {acornRating(hotspot.score, disc)}
+                  </span>
+
+                  {/* Tree count */}
+                  <span style={{
+                    fontSize: '9px',
+                    color: disc ? '#666' : '#555',
+                    letterSpacing: '1px',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {disc ? `${hotspot.tree_count}🌳 ${hotspot.nut_count}🌰` : '?🌳'}
+                  </span>
+                </div>
               </div>
 
-              {/* Tree count */}
+              {/* Arrow / status */}
               <div style={{
-                fontFamily: '"Courier New", monospace',
-                fontSize: '9px',
-                letterSpacing: '1px',
-                color: '#666',
+                width: '28px',
+                minWidth: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                color: disc ? '#38180C' : '#555',
               }}>
-                {isDiscovered ? `${hotspot.tree_count} TREES · ${hotspot.nut_count} NUT` : '? TREES'}
+                {disc ? '📍' : '🔒'}
               </div>
-            </div>
+            </button>
           );
         })}
 
         {sorted.length === 0 && (
           <div style={{
-            gridColumn: '1/-1',
             textAlign: 'center',
-            color: '#444',
+            color: '#888',
             fontFamily: '"Courier New", monospace',
             fontSize: '11px',
             paddingTop: '40px',

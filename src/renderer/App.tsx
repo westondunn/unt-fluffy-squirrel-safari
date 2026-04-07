@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { useOllama } from './hooks/useOllama';
 import { TopBar } from './components/TopBar';
 import { Sidebar } from './components/Sidebar';
-import { MapView } from './components/MapView';
+import { MapView, type MapViewHandle } from './components/MapView';
+import type { Hotspot } from '@shared/types';
 import { QuestOverlay } from './components/QuestOverlay';
 import { SightingModal } from './components/SightingModal';
 import { ToastContainer } from './components/Toast';
@@ -12,6 +13,11 @@ export default function App() {
   const { player, badges, hotspots, quests, ollamaOnline, toasts, refresh, processEvents, removeToast } = useGameState();
   const { messages: chatMessages, loading: chatLoading, sendMessage, clearChat } = useOllama();
   const [sightingModalOpen, setSightingModalOpen] = useState(false);
+  const mapRef = useRef<MapViewHandle>(null);
+
+  const handleFocusHotspot = (hotspot: Hotspot) => {
+    mapRef.current?.flyTo(hotspot.lat, hotspot.lon, 17);
+  };
 
   const handleDiscoverZone = async (hotspotId: number) => {
     try {
@@ -70,7 +76,7 @@ export default function App() {
       <main style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Map area */}
         <div style={{ position: 'relative', flex: 1, overflow: 'hidden' }}>
-          <MapView hotspots={hotspots} onDiscoverZone={handleDiscoverZone} />
+          <MapView ref={mapRef} hotspots={hotspots} onDiscoverZone={handleDiscoverZone} />
 
           {/* Quest overlay — bottom left */}
           <QuestOverlay
@@ -86,10 +92,10 @@ export default function App() {
               position: 'absolute',
               bottom: '16px',
               right: '16px',
-              background: '#e94560',
-              border: '2px solid #fdcb6e',
-              borderRadius: '6px',
-              color: '#fff',
+              background: '#E40058',
+              border: '3px solid #A80040',
+              borderRadius: '2px',
+              color: '#FCF8FC',
               fontFamily: '"Courier New", monospace',
               fontSize: '12px',
               fontWeight: 'bold',
@@ -97,7 +103,7 @@ export default function App() {
               padding: '12px 18px',
               cursor: 'pointer',
               zIndex: 5,
-              boxShadow: '0 4px 16px rgba(233,69,96,0.5)',
+              boxShadow: '3px 3px 0px #A80040',
             }}
           >
             🐿️ LOG SIGHTING
@@ -113,6 +119,7 @@ export default function App() {
           chatLoading={chatLoading}
           onSendChat={sendMessage}
           onClearChat={clearChat}
+          onFocusHotspot={handleFocusHotspot}
         />
       </main>
 

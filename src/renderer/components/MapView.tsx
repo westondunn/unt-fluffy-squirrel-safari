@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import type { Hotspot, Tree } from '@shared/types';
 
@@ -14,12 +14,16 @@ type PopupInfo =
   | { kind: 'hotspot'; hotspot: Hotspot }
   | { kind: 'tree'; tree: { id: number; species: string; elevation: number; memorial: string; isNut: boolean; lat: number; lon: number } };
 
+export interface MapViewHandle {
+  flyTo: (lat: number, lon: number, zoom?: number) => void;
+}
+
 interface MapViewProps {
   hotspots: Hotspot[];
   onDiscoverZone: (hotspotId: number) => void;
 }
 
-export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
+export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView({ hotspots, onDiscoverZone }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const hotspotsRef = useRef<Hotspot[]>(hotspots);
@@ -27,6 +31,13 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
 
   // Keep ref in sync so the load handler can use latest hotspots
   hotspotsRef.current = hotspots;
+
+  // Expose flyTo so parent can pan the map
+  useImperativeHandle(ref, () => ({
+    flyTo(lat: number, lon: number, zoom = 17) {
+      mapRef.current?.flyTo({ center: [lon, lat], zoom, duration: 1200 });
+    },
+  }));
 
   // Load trees for current viewport
   const loadTrees = useCallback(async (map: maplibregl.Map) => {
@@ -384,7 +395,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
       )}
     </div>
   );
-}
+});
 
 // ── Shared styles ────────────────────────────────────────
 const labelStyle: React.CSSProperties = {
