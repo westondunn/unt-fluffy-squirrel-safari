@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "build:main": "tsc -p tsconfig.node.json",
     "build:db": "tsx scripts/build-db.ts",
+    "package:ci": "npm run build && npm run build:main && electron-builder --publish never",
     "electron:dev": "concurrently \"vite\" \"tsc -p tsconfig.node.json --watch\" \"electron .\"",
     "start": "npm run build && npm run build:main && electron .",
     "test": "vitest run",

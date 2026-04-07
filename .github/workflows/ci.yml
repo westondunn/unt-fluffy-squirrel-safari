@@ -80,8 +80,8 @@ jobs:
       - name: Build database
         run: npm run build:db
 
-      - name: Build and package app
-        run: npm run package
+      - name: Build and package app (no auto-publish)
+        run: npm run package:ci
 
       - name: Upload package artifacts
         uses: actions/upload-artifact@v4
