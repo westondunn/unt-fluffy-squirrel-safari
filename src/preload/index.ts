@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
   getPlayer: () => ipcRenderer.invoke('game:get-player'),
   getQuests: () => ipcRenderer.invoke('game:get-quests'),
   getSightings: (hotspotId?: number) => ipcRenderer.invoke('game:get-sightings', hotspotId),
+  completeQuest: (questId: number) => ipcRenderer.invoke('game:complete-quest', questId),
   getSetting: (key: string) => ipcRenderer.invoke('db:get-setting', key),
   setSetting: (key: string, value: string) => ipcRenderer.invoke('db:set-setting', key, value),
 });
