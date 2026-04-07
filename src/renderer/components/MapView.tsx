@@ -77,6 +77,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           nut_count: h.nut_count,
           radius_m: h.radius_m,
           notes: h.notes,
+          discovered: h.discovered,
         },
       })),
     };
@@ -153,10 +154,20 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
             13, 20,
             16, 40,
           ],
-          'circle-color': '#fdcb6e',
+          'circle-color': [
+            'case',
+            ['get', 'discovered'],
+            '#fdcb6e',
+            '#e94560',
+          ],
           'circle-opacity': 0.3,
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#fdcb6e',
+          'circle-stroke-color': [
+            'case',
+            ['get', 'discovered'],
+            '#fdcb6e',
+            '#e94560',
+          ],
           'circle-stroke-opacity': 0.8,
         },
       });
@@ -166,7 +177,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         type: 'symbol',
         source: 'hotspots',
         layout: {
-          'text-field': ['get', 'name'],
+          'text-field': ['case', ['get', 'discovered'], ['get', 'name'], '???'],
           'text-font': ['Open Sans Regular'],
           'text-size': 11,
           'text-anchor': 'top',
@@ -285,33 +296,47 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
             color: '#fdcb6e',
             marginBottom: '8px',
           }}>
-            {popup.hotspot.name}
+            {popup.hotspot.discovered ? popup.hotspot.name : '??? UNKNOWN ZONE'}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
-            <Row label="SCORE" value={`${'🌰'.repeat(popup.hotspot.score || 0)}`} />
-            <Row label="TREES" value={String(popup.hotspot.tree_count)} />
-            <Row label="NUT TREES" value={String(popup.hotspot.nut_count)} />
+            <Row label="SCORE" value={popup.hotspot.discovered ? `${'🌰'.repeat(popup.hotspot.score || 0)}` : '?????'} />
+            <Row label="TREES" value={popup.hotspot.discovered ? String(popup.hotspot.tree_count) : '?'} />
+            <Row label="NUT TREES" value={popup.hotspot.discovered ? String(popup.hotspot.nut_count) : '?'} />
           </div>
 
-          <button
-            onClick={handleDiscover}
-            style={{
-              width: '100%',
-              background: '#e94560',
-              border: 'none',
-              borderRadius: '3px',
-              color: '#fff',
+          {!popup.hotspot.discovered && (
+            <button
+              onClick={handleDiscover}
+              style={{
+                width: '100%',
+                background: '#e94560',
+                border: 'none',
+                borderRadius: '3px',
+                color: '#fff',
+                fontFamily: '"Courier New", monospace',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                letterSpacing: '2px',
+                padding: '10px',
+                cursor: 'pointer',
+              }}
+            >
+              I'M HERE — DISCOVER ZONE
+            </button>
+          )}
+          {popup.hotspot.discovered && (
+            <div style={{
+              textAlign: 'center',
               fontFamily: '"Courier New", monospace',
-              fontSize: '11px',
-              fontWeight: 'bold',
+              fontSize: '10px',
+              color: '#fdcb6e',
               letterSpacing: '2px',
-              padding: '10px',
-              cursor: 'pointer',
-            }}
-          >
-            I'M HERE — DISCOVER ZONE
-          </button>
+              fontWeight: 'bold',
+            }}>
+              DISCOVERED
+            </div>
+          )}
         </div>
       )}
     </div>

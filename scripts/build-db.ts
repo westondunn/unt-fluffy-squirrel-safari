@@ -242,7 +242,8 @@ async function main() {
       tree_count  INTEGER DEFAULT 0,
       nut_count   INTEGER DEFAULT 0,
       species     TEXT,
-      notes       TEXT
+      notes       TEXT,
+      discovered  INTEGER NOT NULL DEFAULT 0
     );
   `);
 

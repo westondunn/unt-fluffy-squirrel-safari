@@ -21,6 +21,7 @@ export interface Hotspot {
   score: number; // squirrel_score 1-5
   species: string; // comma-separated species list
   notes: string;
+  discovered: boolean;
 }
 
 export interface Sighting {

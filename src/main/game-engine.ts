@@ -139,7 +139,7 @@ function checkAndAwardBadges(stats: BadgeStats): GameEvent[] {
 export function handleDiscoverZone(hotspotId: number): GameEvent[] {
   const events: GameEvent[] = [];
 
-  const hotspot = db.getHotspotById(hotspotId);
+  const hotspot = db.discoverZone(hotspotId);
   if (!hotspot) return events;
 
   const prevPlayer = db.getPlayer();

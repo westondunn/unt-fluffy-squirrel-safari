@@ -14,7 +14,7 @@ function acornRating(score: number, discovered: boolean): string {
 export function FieldGuideTab({ hotspots }: FieldGuideTabProps) {
   // Sort by id for stable numbering
   const sorted = [...hotspots].sort((a, b) => a.id - b.id);
-  const discovered = sorted.filter(h => h.score > 0 || h.name).length;
+  const discovered = sorted.filter(h => h.discovered).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -29,7 +29,7 @@ export function FieldGuideTab({ hotspots }: FieldGuideTabProps) {
         color: '#fdcb6e',
         flexShrink: 0,
       }}>
-        FIELD GUIDE — {sorted.length}/{sorted.length} LOADED
+        FIELD GUIDE — {discovered}/{sorted.length} DISCOVERED
       </div>
 
       {/* Grid */}
@@ -44,7 +44,7 @@ export function FieldGuideTab({ hotspots }: FieldGuideTabProps) {
       }}>
         {sorted.map((hotspot, idx) => {
           const num = String(idx + 1).padStart(2, '0');
-          const isDiscovered = true; // All hotspots in DB are known locations
+          const isDiscovered = hotspot.discovered;
 
           return (
             <div

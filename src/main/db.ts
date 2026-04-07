@@ -68,30 +68,34 @@ export function queryTrees(bounds: BoundingBox): Tree[] {
 
 // ── hotspots ──────────────────────────────────────────────────────────────────
 
+function mapHotspot(h: any): Hotspot {
+  return { ...h, discovered: Boolean(h.discovered) };
+}
+
 export function getAllHotspots(): Hotspot[] {
   const d = getDB();
   const results = d.exec(
-    'SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes FROM hotspots',
+    'SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes, discovered FROM hotspots',
   );
-  return execToRows<Hotspot>(results);
+  return execToRows<Hotspot>(results).map(mapHotspot);
 }
 
 export function queryHotspots(lat: number, lon: number, radiusKm: number): Hotspot[] {
   const d = getDB();
   const deg = radiusKm / 111;
   const results = d.exec(
-    `SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes
+    `SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes, discovered
      FROM hotspots
      WHERE lat >= ? AND lat <= ? AND lon >= ? AND lon <= ?`,
     [lat - deg, lat + deg, lon - deg, lon + deg],
   );
-  return execToRows<Hotspot>(results);
+  return execToRows<Hotspot>(results).map(mapHotspot);
 }
 
 export function getHotspotById(hotspotId: number): Hotspot | null {
   const d = getDB();
   const stmt = d.prepare(
-    'SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes FROM hotspots WHERE id = ?',
+    'SELECT id, name, lat, lon, radius_m, score, tree_count, nut_count, species, notes, discovered FROM hotspots WHERE id = ?',
   );
   stmt.bind([hotspotId]);
   const hasRow = stmt.step();
@@ -102,6 +106,13 @@ export function getHotspotById(hotspotId: number): Hotspot | null {
   const row = stmt.getAsObject() as unknown as Hotspot;
   stmt.free();
   return row;
+}
+
+export function discoverZone(hotspotId: number): Hotspot | null {
+  const d = getDB();
+  d.run('UPDATE hotspots SET discovered = 1 WHERE id = ?', [hotspotId]);
+  saveDB();
+  return getHotspotById(hotspotId);
 }
 
 // ── sightings ─────────────────────────────────────────────────────────────────
