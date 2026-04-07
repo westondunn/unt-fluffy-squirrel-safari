@@ -13,62 +13,51 @@ export function TopBar({ player, badges, ollamaOnline }: TopBarProps) {
 
   return (
     <div style={{
-      background: '#e94560',
-      height: '48px',
+      background: '#000',
+      height: '52px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '0 16px',
       flexShrink: 0,
-      borderBottom: '2px solid #fdcb6e',
+      borderBottom: '4px solid #C84C0C',
     }}>
-      {/* Left: Title */}
+      {/* Left: Title — SMB3 style */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <span style={{ fontSize: '22px' }}>🐿️</span>
         <span style={{
           fontFamily: '"Courier New", monospace',
           fontWeight: 'bold',
           fontSize: '18px',
-          letterSpacing: '4px',
-          color: '#fff',
-          textShadow: '2px 2px 0px #0f3460',
+          letterSpacing: '3px',
+          color: '#F8D830',
+          textShadow: '2px 2px 0px #A87820',
         }}>
           SQUIRREL SAFARI
         </span>
       </div>
 
-      {/* Right: Stats */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* Score */}
-        <StatChip label="SCORE" value={player ? player.score.toLocaleString() : '---'} />
-
-        {/* Level */}
-        <StatChip label="LEVEL" value={player ? String(player.level) : '-'} />
-
-        {/* XP */}
-        <StatChip label="XP" value={player ? player.xp.toLocaleString() : '---'} />
-
-        {/* Badges */}
-        <StatChip label="BADGES" value={`${earned}/${total || '?'}`} />
-
-        {/* Ollama status */}
+      {/* Right: Stats — SMB3 HUD style */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <HudStat icon="🪙" label="SCORE" value={player ? player.score.toLocaleString() : '0'} color="#F8D830" />
+        <HudStat icon="⭐" label="WORLD" value={`${player ? player.level : 1}`} color="#FCF8FC" />
+        <HudStat icon="🏅" label="BADGES" value={`${earned}/${total || '?'}`} color="#F8D830" />
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div style={{
             width: '10px',
             height: '10px',
-            borderRadius: '50%',
-            background: ollamaOnline ? '#00ff88' : '#888',
-            boxShadow: ollamaOnline ? '0 0 8px #00ff88' : 'none',
-            animation: ollamaOnline ? 'pulse 2s infinite' : 'none',
+            borderRadius: '2px',
+            background: ollamaOnline ? '#00A800' : '#A80040',
+            border: `2px solid ${ollamaOnline ? '#005800' : '#580020'}`,
           }} />
           <span style={{
             fontFamily: '"Courier New", monospace',
             fontSize: '10px',
             fontWeight: 'bold',
             letterSpacing: '1px',
-            color: ollamaOnline ? '#00ff88' : '#888',
+            color: ollamaOnline ? '#00A800' : '#888',
           }}>
-            {ollamaOnline ? 'SCOUT ONLINE' : 'SCOUT OFFLINE'}
+            {ollamaOnline ? 'SCOUT' : 'OFFLINE'}
           </span>
         </div>
       </div>
@@ -76,21 +65,21 @@ export function TopBar({ player, badges, ollamaOnline }: TopBarProps) {
   );
 }
 
-function StatChip({ label, value }: { label: string; value: string }) {
+function HudStat({ icon, label, value, color }: { icon: string; label: string; value: string; color: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.1 }}>
       <span style={{
         fontFamily: '"Courier New", monospace',
         fontSize: '9px',
         fontWeight: 'bold',
         letterSpacing: '2px',
-        color: 'rgba(255,255,255,0.7)',
-      }}>{label}</span>
+        color: '#FCF8FC',
+      }}>{icon} {label}</span>
       <span style={{
         fontFamily: '"Courier New", monospace',
-        fontSize: '14px',
+        fontSize: '16px',
         fontWeight: 'bold',
-        color: '#fff',
+        color,
         letterSpacing: '1px',
       }}>{value}</span>
     </div>

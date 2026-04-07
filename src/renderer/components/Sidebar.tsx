@@ -24,22 +24,24 @@ export function Sidebar({
   const [activeTab, setActiveTab] = useState<Tab>('CHAT');
 
   const tabs: Tab[] = ['CHAT', 'GUIDE', 'BADGES'];
+  const tabIcons: Record<Tab, string> = { CHAT: '💬', GUIDE: '📖', BADGES: '🏅' };
 
   return (
     <div style={{
       width: '300px',
       minWidth: '300px',
-      background: '#16213e',
-      borderLeft: '2px solid #e94560',
+      background: '#E8A060',
+      borderLeft: '4px solid #C84C0C',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
     }}>
-      {/* Tab bar */}
+      {/* Tab bar — brick style */}
       <div style={{
         display: 'flex',
-        borderBottom: '2px solid #1a1a2e',
+        borderBottom: '4px solid #C84C0C',
         flexShrink: 0,
+        background: '#000',
       }}>
         {tabs.map(tab => (
           <button
@@ -48,25 +50,24 @@ export function Sidebar({
             style={{
               flex: 1,
               padding: '10px 4px',
-              background: activeTab === tab ? '#e94560' : 'transparent',
+              background: activeTab === tab ? '#E40058' : '#000',
               border: 'none',
-              borderRight: tab !== 'BADGES' ? '1px solid #1a1a2e' : 'none',
-              color: activeTab === tab ? '#fff' : '#888',
+              borderRight: tab !== 'BADGES' ? '2px solid #C84C0C' : 'none',
+              color: activeTab === tab ? '#FCF8FC' : '#888',
               fontFamily: '"Courier New", monospace',
               fontSize: '10px',
               fontWeight: 'bold',
               letterSpacing: '2px',
               cursor: 'pointer',
-              transition: 'all 0.15s',
             }}
           >
-            {tab}
+            {tabIcons[tab]} {tab}
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-      <div style={{ flex: 1, overflow: 'hidden' }}>
+      <div style={{ flex: 1, overflow: 'hidden', background: 'rgba(56,24,12,0.88)' }}>
         {activeTab === 'CHAT' && (
           <ChatTab
             messages={chatMessages}

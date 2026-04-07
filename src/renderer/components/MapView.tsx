@@ -94,7 +94,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         sources: {
           osm: {
             type: 'raster',
-            tiles: ['https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'],
+            tiles: ['https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'],
             tileSize: 256,
             attribution: '© OpenStreetMap contributors © CARTO',
           },
@@ -129,8 +129,8 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           'circle-color': [
             'case',
             ['get', 'isNut'],
-            '#e94560',
-            '#fdcb6e',
+            '#E40058',
+            '#00A800',
           ],
           'circle-opacity': 0.8,
           'circle-stroke-width': 1,
@@ -157,16 +157,16 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           'circle-color': [
             'case',
             ['get', 'discovered'],
-            '#fdcb6e',
-            '#e94560',
+            '#F8D830',
+            '#E40058',
           ],
-          'circle-opacity': 0.3,
-          'circle-stroke-width': 2,
+          'circle-opacity': 0.35,
+          'circle-stroke-width': 3,
           'circle-stroke-color': [
             'case',
             ['get', 'discovered'],
-            '#fdcb6e',
-            '#e94560',
+            '#A87820',
+            '#A80040',
           ],
           'circle-stroke-opacity': 0.8,
         },
@@ -263,14 +263,14 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           bottom: '80px',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'rgba(22, 33, 62, 0.97)',
-          border: '2px solid #fdcb6e',
-          borderRadius: '6px',
+          background: '#F8B800',
+          border: '4px solid #A87820',
+          borderRadius: '2px',
           padding: '14px 18px',
           minWidth: '240px',
           maxWidth: '300px',
           zIndex: 10,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+          boxShadow: '4px 4px 0px #A87820, inset 2px 2px 0px rgba(255,255,255,0.3)',
         }}>
           <button
             onClick={() => setPopup(null)}
@@ -280,7 +280,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
               right: '8px',
               background: 'transparent',
               border: 'none',
-              color: '#888',
+              color: '#38180C',
               cursor: 'pointer',
               fontFamily: '"Courier New", monospace',
               fontSize: '14px',
@@ -294,7 +294,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
             fontSize: '13px',
             fontWeight: 'bold',
             letterSpacing: '2px',
-            color: '#fdcb6e',
+            color: '#38180C',
             marginBottom: '8px',
           }}>
             {popup.hotspot.discovered ? popup.hotspot.name : '??? UNKNOWN ZONE'}
@@ -311,10 +311,11 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
               onClick={handleDiscover}
               style={{
                 width: '100%',
-                background: '#e94560',
-                border: 'none',
-                borderRadius: '3px',
-                color: '#fff',
+                background: '#E40058',
+                border: '3px solid #A80040',
+                borderRadius: '2px',
+                color: '#FCF8FC',
+                boxShadow: '2px 2px 0px #A80040',
                 fontFamily: '"Courier New", monospace',
                 fontSize: '11px',
                 fontWeight: 'bold',
@@ -331,11 +332,11 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
               textAlign: 'center',
               fontFamily: '"Courier New", monospace',
               fontSize: '10px',
-              color: '#fdcb6e',
+              color: '#00A800',
               letterSpacing: '2px',
               fontWeight: 'bold',
             }}>
-              DISCOVERED
+              ⭐ DISCOVERED ⭐
             </div>
           )}
         </div>
