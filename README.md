@@ -90,6 +90,33 @@ npm test           # Run all 62 tests
 npm run test:watch # Watch mode
 ```
 
+### GitHub One-Click Release
+
+Use the **Bump Version And Release** workflow in GitHub Actions:
+
+1. Go to **Actions** -> **Bump Version And Release** -> **Run workflow**
+2. Choose bump type (`patch`, `minor`, `major`) or set `custom_version`
+3. Run on `main` (or your target branch)
+
+The workflow will:
+
+- bump `package.json` + `package-lock.json`
+- commit the version bump
+- create and push a `v*` tag
+- automatically trigger the **Release** workflow to build and publish installer assets
+
+If it cannot push, verify repository Action permissions allow write access and branch protection rules permit bot pushes.
+
+### GitHub Cross-Platform Package Smoke Test
+
+Use **Actions** -> **Package Smoke (Cross-Platform)** -> **Run workflow** to build package artifacts on:
+
+- Windows (`nsis` installer)
+- macOS (`dmg`)
+- Linux (`AppImage`)
+
+Each run uploads build artifacts so you can download and test installer output from all three systems.
+
 ## Screenshots
 
 ### Campus Map with Tree Data

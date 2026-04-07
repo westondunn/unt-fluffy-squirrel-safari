@@ -1,0 +1,112 @@
+name: Bump Version And Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version increment type
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      custom_version:
+        description: Optional exact version (example 0.2.0 or v0.2.0). Overrides bump.
+        required: false
+        type: string
+      branch:
+        description: Branch to bump/tag from
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bump-and-tag:
+    name: Bump, Commit, Tag, Push
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump package version
+        id: bump
+        shell: bash
+        env:
+          INPUT_BUMP: ${{ inputs.bump }}
+          INPUT_CUSTOM_VERSION: ${{ inputs.custom_version }}
+        run: |
+          set -euo pipefail
+
+          if [[ -n "${INPUT_CUSTOM_VERSION}" ]]; then
+            NEXT_VERSION="${INPUT_CUSTOM_VERSION#v}"
+            npm version "${NEXT_VERSION}" --no-git-tag-version
+          else
+            npm version "${INPUT_BUMP}" --no-git-tag-version
+          fi
+
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists on origin. Pick a different version." >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git add package.json package-lock.json
+          git commit -m "chore(release): ${TAG}"
+          git tag "${TAG}"
+
+      - name: Push commit and tag
+        env:
+          TARGET_BRANCH: ${{ inputs.branch }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${TARGET_BRANCH}"
+          git push origin "${TAG}"
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          {
+            echo "## Release Triggered"
+            echo
+            echo "- Version: \`${VERSION}\`"
+            echo "- Tag: \`${TAG}\`"
+            echo "- Next: the \`Release\` workflow runs automatically from this tag push."
+          } >> "$GITHUB_STEP_SUMMARY"
