@@ -14,13 +14,21 @@ concurrency:
 
 jobs:
   validate:
-    name: Validate (Node ${{ matrix.node }})
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    name: Validate (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
-        node: [20.x, 22.x]
+        include:
+          - os: ubuntu-latest
+            node: 20.x
+          - os: ubuntu-latest
+            node: 22.x
+          - os: windows-latest
+            node: 20.x
+          - os: macos-latest
+            node: 20.x
 
     steps:
       - name: Checkout
@@ -47,8 +55,8 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Upload build artifacts (Node 20)
-        if: matrix.node == '20.x'
+      - name: Upload build artifacts (Linux Node 20)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '20.x'
         uses: actions/upload-artifact@v4
         with:
           name: build-output-linux
