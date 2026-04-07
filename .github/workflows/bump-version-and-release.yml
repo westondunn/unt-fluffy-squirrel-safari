@@ -23,6 +23,7 @@ on:
         type: string
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -106,6 +107,21 @@ jobs:
           git push origin "HEAD:${TARGET_BRANCH}"
           git push origin "${TAG}"
 
+      - name: Trigger Release workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release.yml',
+              ref: '${{ inputs.branch }}',
+              inputs: {
+                release_tag: '${{ steps.bump.outputs.tag }}'
+              }
+            });
+            core.info('Triggered release.yml with release_tag=${{ steps.bump.outputs.tag }}');
+
       - name: Summary
         env:
           VERSION: ${{ steps.bump.outputs.version }}
@@ -116,5 +132,5 @@ jobs:
             echo
             echo "- Version: \`${VERSION}\`"
             echo "- Tag: \`${TAG}\`"
-            echo "- Next: the \`Release\` workflow runs automatically from this tag push."
+            echo "- Next: the \`Release\` workflow has been dispatched explicitly with \`release_tag=${TAG}\`."
           } >> "$GITHUB_STEP_SUMMARY"
