@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
-import type { Hotspot } from '@shared/types';
+import type { Hotspot, Tree } from '@shared/types';
 
 const UNT_LAT = 33.2100;
 const UNT_LON = -97.1525;
@@ -10,11 +10,9 @@ const NUT_SPECIES = new Set([
   'Pecan', 'Hackberry', 'Cedar Elm', 'Sweetgum', 'Mesquite',
 ]);
 
-interface PopupInfo {
-  hotspot: Hotspot;
-  x: number;
-  y: number;
-}
+type PopupInfo =
+  | { kind: 'hotspot'; hotspot: Hotspot }
+  | { kind: 'tree'; tree: { id: number; species: string; elevation: number; memorial: string; isNut: boolean; lat: number; lon: number } };
 
 interface MapViewProps {
   hotspots: Hotspot[];
@@ -24,7 +22,11 @@ interface MapViewProps {
 export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const hotspotsRef = useRef<Hotspot[]>(hotspots);
   const [popup, setPopup] = useState<PopupInfo | null>(null);
+
+  // Keep ref in sync so the load handler can use latest hotspots
+  hotspotsRef.current = hotspots;
 
   // Load trees for current viewport
   const loadTrees = useCallback(async (map: maplibregl.Map) => {
@@ -45,6 +47,8 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           properties: {
             id: tree.id,
             species: tree.species,
+            elevation: tree.elevation,
+            memorial: tree.memorial,
             isNut: NUT_SPECIES.has(tree.species),
           },
         })),
@@ -114,7 +118,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
 
     map.on('load', () => {
-      // Add tree source
+      // ── Tree layer ──────────────────────────────────────
       map.addSource('trees', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
@@ -125,7 +129,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         type: 'circle',
         source: 'trees',
         paint: {
-          'circle-radius': 4,
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 2, 16, 5, 18, 8],
           'circle-color': [
             'case',
             ['get', 'isNut'],
@@ -138,7 +142,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         },
       });
 
-      // Add hotspot source
+      // ── Hotspot layer ───────────────────────────────────
       map.addSource('hotspots', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
@@ -184,25 +188,28 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           'text-offset': [0, 1.2],
         },
         paint: {
-          'text-color': '#fdcb6e',
-          'text-halo-color': '#1a1a2e',
+          'text-color': '#38180C',
+          'text-halo-color': '#F8D830',
           'text-halo-width': 2,
         },
       });
 
       // Load initial trees
       loadTrees(map);
+
+      // Load initial hotspots (fixes: hotspots not showing on first render)
+      updateHotspots(map, hotspotsRef.current);
     });
 
     map.on('moveend', () => loadTrees(map));
 
-    // Click on hotspot
+    // ── Click on hotspot ────────────────────────────────
     map.on('click', 'hotspots-circle', e => {
       if (!e.features || e.features.length === 0) return;
+      e.originalEvent.stopPropagation();
       const feature = e.features[0];
-      const props = feature.properties;
+      const props = feature.properties!;
       const coords = (feature.geometry as GeoJSON.Point).coordinates;
-      const point = map.project([coords[0], coords[1]]);
 
       const hotspot: Hotspot = {
         id: props.id,
@@ -217,20 +224,46 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
         notes: props.notes,
         discovered: Boolean(props.discovered),
       };
-      setPopup({ hotspot, x: point.x, y: point.y });
+      setPopup({ kind: 'hotspot', hotspot });
     });
 
+    // ── Click on tree ───────────────────────────────────
+    map.on('click', 'trees-layer', e => {
+      if (!e.features || e.features.length === 0) return;
+      // Don't fire if hotspot was also clicked
+      const hotspotFeatures = map.queryRenderedFeatures(e.point, { layers: ['hotspots-circle'] });
+      if (hotspotFeatures.length > 0) return;
+
+      const feature = e.features[0];
+      const props = feature.properties!;
+      const coords = (feature.geometry as GeoJSON.Point).coordinates;
+
+      setPopup({
+        kind: 'tree',
+        tree: {
+          id: props.id,
+          species: props.species || 'Unknown',
+          elevation: props.elevation || 0,
+          memorial: props.memorial || 'N',
+          isNut: Boolean(props.isNut),
+          lat: coords[1],
+          lon: coords[0],
+        },
+      });
+    });
+
+    // Click empty area to close popup
     map.on('click', e => {
-      const features = map.queryRenderedFeatures(e.point, { layers: ['hotspots-circle'] });
-      if (features.length === 0) setPopup(null);
+      const hotspotHits = map.queryRenderedFeatures(e.point, { layers: ['hotspots-circle'] });
+      const treeHits = map.queryRenderedFeatures(e.point, { layers: ['trees-layer'] });
+      if (hotspotHits.length === 0 && treeHits.length === 0) setPopup(null);
     });
 
-    map.on('mouseenter', 'hotspots-circle', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-    map.on('mouseleave', 'hotspots-circle', () => {
-      map.getCanvas().style.cursor = '';
-    });
+    // Cursor changes
+    map.on('mouseenter', 'hotspots-circle', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'hotspots-circle', () => { map.getCanvas().style.cursor = ''; });
+    map.on('mouseenter', 'trees-layer', () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'trees-layer', () => { map.getCanvas().style.cursor = ''; });
 
     return () => {
       map.remove();
@@ -239,7 +272,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update hotspots when they change
+  // Update hotspots when prop changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
@@ -247,7 +280,7 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
   }, [hotspots, updateHotspots]);
 
   const handleDiscover = () => {
-    if (!popup) return;
+    if (!popup || popup.kind !== 'hotspot') return;
     onDiscoverZone(popup.hotspot.id);
     setPopup(null);
   };
@@ -256,8 +289,8 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* Hotspot popup */}
-      {popup && (
+      {/* ── Hotspot popup ── */}
+      {popup?.kind === 'hotspot' && (
         <div style={{
           position: 'absolute',
           bottom: '80px',
@@ -272,31 +305,9 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           zIndex: 10,
           boxShadow: '4px 4px 0px #A87820, inset 2px 2px 0px rgba(255,255,255,0.3)',
         }}>
-          <button
-            onClick={() => setPopup(null)}
-            style={{
-              position: 'absolute',
-              top: '6px',
-              right: '8px',
-              background: 'transparent',
-              border: 'none',
-              color: '#38180C',
-              cursor: 'pointer',
-              fontFamily: '"Courier New", monospace',
-              fontSize: '14px',
-            }}
-          >
-            ✕
-          </button>
+          <button onClick={() => setPopup(null)} style={closeBtn}>✕</button>
 
-          <div style={{
-            fontFamily: '"Courier New", monospace',
-            fontSize: '13px',
-            fontWeight: 'bold',
-            letterSpacing: '2px',
-            color: '#38180C',
-            marginBottom: '8px',
-          }}>
+          <div style={{ ...labelStyle, fontSize: '13px', color: '#38180C', marginBottom: '8px' }}>
             {popup.hotspot.discovered ? popup.hotspot.name : '??? UNKNOWN ZONE'}
           </div>
 
@@ -307,51 +318,101 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
           </div>
 
           {!popup.hotspot.discovered && (
-            <button
-              onClick={handleDiscover}
-              style={{
-                width: '100%',
-                background: '#E40058',
-                border: '3px solid #A80040',
-                borderRadius: '2px',
-                color: '#FCF8FC',
-                boxShadow: '2px 2px 0px #A80040',
-                fontFamily: '"Courier New", monospace',
-                fontSize: '11px',
-                fontWeight: 'bold',
-                letterSpacing: '2px',
-                padding: '10px',
-                cursor: 'pointer',
-              }}
-            >
+            <button onClick={handleDiscover} style={discoverBtn}>
               I'M HERE — DISCOVER ZONE
             </button>
           )}
           {popup.hotspot.discovered && (
-            <div style={{
-              textAlign: 'center',
-              fontFamily: '"Courier New", monospace',
-              fontSize: '10px',
-              color: '#00A800',
-              letterSpacing: '2px',
-              fontWeight: 'bold',
-            }}>
+            <div style={{ ...labelStyle, textAlign: 'center', fontSize: '10px', color: '#00A800' }}>
               ⭐ DISCOVERED ⭐
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Tree popup ── */}
+      {popup?.kind === 'tree' && (
+        <div style={{
+          position: 'absolute',
+          bottom: '80px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: popup.tree.isNut ? '#F8B800' : '#88E888',
+          border: `4px solid ${popup.tree.isNut ? '#A87820' : '#005800'}`,
+          borderRadius: '2px',
+          padding: '14px 18px',
+          minWidth: '220px',
+          maxWidth: '280px',
+          zIndex: 10,
+          boxShadow: `4px 4px 0px ${popup.tree.isNut ? '#A87820' : '#005800'}, inset 2px 2px 0px rgba(255,255,255,0.3)`,
+        }}>
+          <button onClick={() => setPopup(null)} style={closeBtn}>✕</button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '24px' }}>{popup.tree.isNut ? '🌰' : '🌳'}</span>
+            <div>
+              <div style={{ ...labelStyle, fontSize: '14px', color: '#38180C' }}>
+                {popup.tree.species}
+              </div>
+              <div style={{ ...labelStyle, fontSize: '9px', color: '#666', letterSpacing: '1px' }}>
+                TREE #{popup.tree.id}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <Row label="TYPE" value={popup.tree.isNut ? '🐿️ NUT TREE — SQUIRREL FOOD!' : '🌿 NON-NUT TREE'} />
+            <Row label="ELEVATION" value={popup.tree.elevation > 0 ? `${popup.tree.elevation.toFixed(0)} ft` : 'N/A'} />
+            <Row label="MEMORIAL" value={popup.tree.memorial === 'Y' ? '⭐ YES' : 'No'} />
+            <Row label="COORDS" value={`${popup.tree.lat.toFixed(4)}, ${popup.tree.lon.toFixed(4)}`} />
+          </div>
         </div>
       )}
     </div>
   );
 }
 
+// ── Shared styles ────────────────────────────────────────
+const labelStyle: React.CSSProperties = {
+  fontFamily: '"Courier New", monospace',
+  fontWeight: 'bold',
+  letterSpacing: '2px',
+};
+
+const closeBtn: React.CSSProperties = {
+  position: 'absolute',
+  top: '6px',
+  right: '8px',
+  background: 'transparent',
+  border: 'none',
+  color: '#38180C',
+  cursor: 'pointer',
+  fontFamily: '"Courier New", monospace',
+  fontSize: '14px',
+};
+
+const discoverBtn: React.CSSProperties = {
+  width: '100%',
+  background: '#E40058',
+  border: '3px solid #A80040',
+  borderRadius: '2px',
+  color: '#FCF8FC',
+  boxShadow: '2px 2px 0px #A80040',
+  fontFamily: '"Courier New", monospace',
+  fontSize: '11px',
+  fontWeight: 'bold',
+  letterSpacing: '2px',
+  padding: '10px',
+  cursor: 'pointer',
+};
+
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '10px', color: '#888', letterSpacing: '1px' }}>
+      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '10px', color: '#666', letterSpacing: '1px', fontWeight: 'bold' }}>
         {label}
       </span>
-      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '11px', color: '#eee' }}>
+      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '11px', color: '#38180C', fontWeight: 'bold' }}>
         {value}
       </span>
     </div>
