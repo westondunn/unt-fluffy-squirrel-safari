@@ -137,8 +137,22 @@ export function MapView({ hotspots, onDiscoverZone }: MapViewProps) {
             '#00A800',
           ],
           'circle-opacity': 0.8,
-          'circle-stroke-width': 1,
-          'circle-stroke-color': 'rgba(0,0,0,0.3)',
+          'circle-stroke-width': ['case', ['==', ['get', 'memorial'], 'Y'], 3, 1],
+          'circle-stroke-color': ['case', ['==', ['get', 'memorial'], 'Y'], '#F8D830', 'rgba(0,0,0,0.3)'],
+        },
+      });
+
+      // ── Memorial tree markers (star on top of circle) ──
+      map.addLayer({
+        id: 'trees-memorial',
+        type: 'symbol',
+        source: 'trees',
+        filter: ['==', ['get', 'memorial'], 'Y'],
+        layout: {
+          'text-field': '⭐',
+          'text-size': ['interpolate', ['linear'], ['zoom'], 13, 6, 16, 12, 18, 18],
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
         },
       });
 
