@@ -1,6 +1,84 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateLevel, checkBadgeCriteria } from '../src/main/game-engine';
 import type { BadgeStats } from '../src/main/game-engine';
+import {
+  handleDiscoverZone,
+  handleLogSighting,
+  handleCompleteQuest,
+  POINTS,
+} from '../src/main/game-engine';
+import type { Player, Hotspot, Sighting, Badge } from '../src/shared/types';
+
+vi.mock('../src/main/db', () => ({
+  discoverZone: vi.fn(),
+  getPlayer: vi.fn(),
+  addScore: vi.fn(),
+  updateLastSeen: vi.fn(),
+  getSightings: vi.fn(),
+  getBadges: vi.fn(),
+  getAllHotspots: vi.fn(),
+  getQuests: vi.fn(),
+  getSetting: vi.fn(),
+  logSighting: vi.fn(),
+  completeQuest: vi.fn(),
+  earnBadge: vi.fn(),
+}));
+
+import * as db from '../src/main/db';
+
+const mockedDb = vi.mocked(db);
+
+function makePlayer(overrides: Partial<Player> = {}): Player {
+  return {
+    id: 1,
+    name: 'Tester',
+    level: 1,
+    xp: 0,
+    score: 0,
+    streak: 0,
+    last_seen: null,
+    ...overrides,
+  };
+}
+
+function makeBadge(id: number, overrides: Partial<Badge> = {}): Badge {
+  return {
+    id,
+    name: `Badge ${id}`,
+    description: 'test',
+    icon: 'icon',
+    condition_type: 'discover_count',
+    condition_value: 99,
+    earned: false,
+    earned_at: null,
+    ...overrides,
+  };
+}
+
+function setupDefaultMocks(): void {
+  mockedDb.getPlayer.mockReturnValue(makePlayer());
+  mockedDb.getSightings.mockReturnValue([]);
+  mockedDb.getBadges.mockReturnValue([]);
+  mockedDb.getAllHotspots.mockReturnValue([]);
+  mockedDb.getQuests.mockReturnValue([]);
+  mockedDb.getSetting.mockReturnValue(undefined);
+  mockedDb.addScore.mockReturnValue(makePlayer());
+  mockedDb.logSighting.mockReturnValue({
+    id: 1,
+    tree_id: null,
+    hotspot_id: null,
+    lat: 33.21,
+    lon: -97.15,
+    photo_path: null,
+    notes: '',
+    timestamp: '2026-04-08T00:00:00Z',
+  } as Sighting);
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  setupDefaultMocks();
+});
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -185,5 +263,178 @@ describe('checkBadgeCriteria — time/special types', () => {
 
   it('returns false for unknown type', () => {
     expect(checkBadgeCriteria('does_not_exist', 1, makeStats())).toBe(false);
+  });
+});
+
+// ── handleDiscoverZone ───────────────────────────────────────────────────────
+
+describe('handleDiscoverZone', () => {
+  it('returns score and zone_discovered events on success', () => {
+    mockedDb.discoverZone.mockReturnValue({
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
+    } as Hotspot);
+    const updated = makePlayer({ score: 100 });
+    mockedDb.getPlayer
+      .mockReturnValueOnce(makePlayer({ score: 0, level: 1 }))
+      .mockReturnValueOnce(updated);
+    mockedDb.addScore.mockReturnValue(updated);
+
+    const events = handleDiscoverZone(1);
+
+    expect(events.some((e) => e.type === 'score')).toBe(true);
+    expect(events.some((e) => e.type === 'zone_discovered')).toBe(true);
+    const scoreEvt = events.find((e) => e.type === 'score')!;
+    expect(scoreEvt.payload).toEqual({ points: POINTS.DISCOVER_ZONE, total: 100 });
+  });
+
+  it('returns empty events when hotspot not found', () => {
+    mockedDb.discoverZone.mockReturnValue(null);
+    const events = handleDiscoverZone(999);
+    expect(events).toHaveLength(0);
+  });
+
+  it('detects level-up when score crosses 500 boundary', () => {
+    mockedDb.discoverZone.mockReturnValue({
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
+    } as Hotspot);
+    mockedDb.getPlayer
+      .mockReturnValueOnce(makePlayer({ score: 450, level: 1 }))
+      .mockReturnValueOnce(makePlayer({ score: 550, level: 2 }));
+    mockedDb.addScore.mockReturnValue(makePlayer({ score: 550, level: 2 }));
+
+    const events = handleDiscoverZone(1);
+    expect(events.some((e) => e.type === 'level_up')).toBe(true);
+  });
+
+  it('triggers badge award when criteria met', () => {
+    mockedDb.discoverZone.mockReturnValue({
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
+    } as Hotspot);
+    const player = makePlayer({ score: 100, level: 1 });
+    mockedDb.getPlayer.mockReturnValue(player);
+    mockedDb.addScore.mockReturnValue(player);
+    // Badge with discover_count=1, currently at 0 discoveries but handler increments
+    mockedDb.getBadges.mockReturnValue([
+      makeBadge(1, { condition_type: 'discover_count', condition_value: 1 }),
+    ]);
+
+    const events = handleDiscoverZone(1);
+    expect(events.some((e) => e.type === 'badge_earned')).toBe(true);
+  });
+});
+
+// ── handleLogSighting ────────────────────────────────────────────────────────
+
+describe('handleLogSighting', () => {
+  it('returns score event with correct points', () => {
+    const updated = makePlayer({ score: 50 });
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
+    mockedDb.addScore.mockReturnValue(updated);
+
+    const events = handleLogSighting({
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
+    });
+
+    const scoreEvt = events.find((e) => e.type === 'score')!;
+    expect(scoreEvt.payload).toEqual({ points: POINTS.LOG_SIGHTING, total: 50 });
+  });
+
+  it('calls db.logSighting with the sighting data', () => {
+    const sighting = {
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
+    };
+    handleLogSighting(sighting);
+    expect(mockedDb.logSighting).toHaveBeenCalledWith(sighting);
+  });
+
+  it('detects level-up', () => {
+    mockedDb.getPlayer
+      .mockReturnValueOnce(makePlayer({ score: 480, level: 1 }))
+      .mockReturnValueOnce(makePlayer({ score: 530, level: 2 }));
+    mockedDb.addScore.mockReturnValue(makePlayer({ score: 530, level: 2 }));
+
+    const events = handleLogSighting({
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
+    });
+
+    expect(events.some((e) => e.type === 'level_up')).toBe(true);
+  });
+});
+
+// ── handleCompleteQuest ──────────────────────────────────────────────────────
+
+describe('handleCompleteQuest', () => {
+  it('returns score event with correct points', () => {
+    const updated = makePlayer({ score: 300 });
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
+    mockedDb.addScore.mockReturnValue(updated);
+
+    const events = handleCompleteQuest(1);
+
+    const scoreEvt = events.find((e) => e.type === 'score')!;
+    expect(scoreEvt.payload).toEqual({ points: POINTS.COMPLETE_QUEST, total: 300 });
+  });
+
+  it('calls db.completeQuest with the quest id', () => {
+    handleCompleteQuest(42);
+    expect(mockedDb.completeQuest).toHaveBeenCalledWith(42);
+  });
+
+  it('detects level-up from quest points', () => {
+    mockedDb.getPlayer
+      .mockReturnValueOnce(makePlayer({ score: 400, level: 1 }))
+      .mockReturnValueOnce(makePlayer({ score: 700, level: 2 }));
+    mockedDb.addScore.mockReturnValue(makePlayer({ score: 700, level: 2 }));
+
+    const events = handleCompleteQuest(1);
+    expect(events.some((e) => e.type === 'level_up')).toBe(true);
   });
 });
