@@ -36,7 +36,16 @@ vi.mock('sql.js', async () => {
   };
 });
 
-import { initDB, closeDB, saveDB } from '../src/main/db';
+import {
+  initDB,
+  closeDB,
+  saveDB,
+  queryTrees,
+  getAllHotspots,
+  queryHotspots,
+  getHotspotById,
+  discoverZone,
+} from '../src/main/db';
 
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS trees (
@@ -172,5 +181,83 @@ describe('lifecycle', () => {
     closeDB();
     // After close, operations should throw
     expect(() => saveDB()).toThrow('DB not initialized');
+  });
+});
+
+// ── trees ────────────────────────────────────────────────────────────────────
+
+describe('queryTrees', () => {
+  it('returns trees within bounding box', () => {
+    const trees = queryTrees({ minLat: 33.0, maxLat: 33.22, minLon: -97.2, maxLon: -97.1 });
+    expect(trees).toHaveLength(2);
+    expect(trees[0].species).toBe('Live Oak');
+  });
+
+  it('returns empty array when no trees match', () => {
+    const trees = queryTrees({ minLat: 40.0, maxLat: 41.0, minLon: -80.0, maxLon: -79.0 });
+    expect(trees).toHaveLength(0);
+  });
+
+  it('filters correctly on lat/lon boundaries', () => {
+    // Only tree 3 is at 33.300, -97.200
+    const trees = queryTrees({ minLat: 33.25, maxLat: 33.35, minLon: -97.25, maxLon: -97.15 });
+    expect(trees).toHaveLength(1);
+    expect(trees[0].species).toBe('Cedar Elm');
+  });
+});
+
+// ── hotspots ─────────────────────────────────────────────────────────────────
+
+describe('getAllHotspots', () => {
+  it('returns all hotspots with discovered as boolean', () => {
+    const hotspots = getAllHotspots();
+    expect(hotspots).toHaveLength(2);
+    expect(hotspots[0].discovered).toBe(false);
+    expect(hotspots[1].discovered).toBe(true);
+  });
+});
+
+describe('queryHotspots', () => {
+  it('returns hotspots within radius', () => {
+    // Oak Alley is at 33.210, -97.150
+    const hotspots = queryHotspots(33.210, -97.150, 1);
+    expect(hotspots.length).toBeGreaterThanOrEqual(1);
+    expect(hotspots.some((h) => h.name === 'Oak Alley')).toBe(true);
+  });
+
+  it('returns empty when no hotspots in range', () => {
+    const hotspots = queryHotspots(40.0, -80.0, 1);
+    expect(hotspots).toHaveLength(0);
+  });
+});
+
+describe('getHotspotById', () => {
+  it('returns the matching hotspot', () => {
+    const hotspot = getHotspotById(1);
+    expect(hotspot).not.toBeNull();
+    expect(hotspot!.name).toBe('Oak Alley');
+  });
+
+  it('returns null for non-existent id', () => {
+    const hotspot = getHotspotById(999);
+    expect(hotspot).toBeNull();
+  });
+});
+
+describe('discoverZone', () => {
+  it('sets discovered to 1 and returns the updated hotspot', () => {
+    // Oak Alley starts as discovered=0
+    const hotspot = discoverZone(1);
+    expect(hotspot).not.toBeNull();
+    // Verify in the database
+    const all = getAllHotspots();
+    const oakAlley = all.find((h) => h.id === 1);
+    expect(oakAlley!.discovered).toBe(true);
+  });
+
+  it('returns null for non-existent hotspot', () => {
+    const hotspot = discoverZone(999);
+    // getHotspotById(999) returns null
+    expect(hotspot).toBeNull();
   });
 });
