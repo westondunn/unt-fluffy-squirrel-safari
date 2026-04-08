@@ -14,18 +14,19 @@
 
 ## File Structure
 
-| Action | File | Responsibility |
-|--------|------|----------------|
-| Create | `tests/db.test.ts` | All 25 exported db functions against in-memory SQLite |
-| Modify | `tests/game-engine.test.ts` | Add handler tests with mocked db |
-| Modify | `tests/ollama.test.ts` | Add async function tests with mocked db + fetch |
-| Modify | `quality-gates.yml:7-9` | Raise coverage thresholds |
+| Action | File                        | Responsibility                                        |
+| ------ | --------------------------- | ----------------------------------------------------- |
+| Create | `tests/db.test.ts`          | All 25 exported db functions against in-memory SQLite |
+| Modify | `tests/game-engine.test.ts` | Add handler tests with mocked db                      |
+| Modify | `tests/ollama.test.ts`      | Add async function tests with mocked db + fetch       |
+| Modify | `quality-gates.yml:7-9`     | Raise coverage thresholds                             |
 
 ---
 
 ### Task 1: Create db.test.ts — Setup and Lifecycle Tests
 
 **Files:**
+
 - Create: `tests/db.test.ts`
 
 - [ ] **Step 1: Create the test file with in-memory db setup**
@@ -167,7 +168,9 @@ function seedDB(): void {
   }
 
   // Seed a player row (required by getPlayer)
-  memDb.run("INSERT INTO player (id, name, level, xp, score, streak) VALUES (1, 'Tester', 1, 0, 0, 0)");
+  memDb.run(
+    "INSERT INTO player (id, name, level, xp, score, streak) VALUES (1, 'Tester', 1, 0, 0, 0)",
+  );
 
   // Seed trees
   memDb.run(
@@ -254,6 +257,7 @@ git commit -m "test: add db.test.ts with lifecycle tests and in-memory SQLite se
 ### Task 2: db.test.ts — Trees and Hotspots Tests
 
 **Files:**
+
 - Modify: `tests/db.test.ts`
 
 - [ ] **Step 1: Add trees tests**
@@ -303,7 +307,7 @@ describe('getAllHotspots', () => {
 describe('queryHotspots', () => {
   it('returns hotspots within radius', () => {
     // Oak Alley is at 33.210, -97.150
-    const hotspots = queryHotspots(33.210, -97.150, 1);
+    const hotspots = queryHotspots(33.21, -97.15, 1);
     expect(hotspots.length).toBeGreaterThanOrEqual(1);
     expect(hotspots.some((h) => h.name === 'Oak Alley')).toBe(true);
   });
@@ -364,6 +368,7 @@ git commit -m "test: add trees and hotspots tests to db.test.ts"
 ### Task 3: db.test.ts — Sightings, Badges, Quests Tests
 
 **Files:**
+
 - Modify: `tests/db.test.ts`
 
 - [ ] **Step 1: Add sightings tests**
@@ -378,8 +383,8 @@ describe('logSighting', () => {
     const sighting = logSighting({
       tree_id: 1,
       hotspot_id: 1,
-      lat: 33.210,
-      lon: -97.150,
+      lat: 33.21,
+      lon: -97.15,
       photo_path: null,
       notes: 'Saw a squirrel!',
       timestamp: '2026-04-08T12:00:00Z',
@@ -392,8 +397,8 @@ describe('logSighting', () => {
     const sighting = logSighting({
       tree_id: null,
       hotspot_id: null,
-      lat: 33.210,
-      lon: -97.150,
+      lat: 33.21,
+      lon: -97.15,
       photo_path: null,
       notes: 'Quick sighting',
       timestamp: '2026-04-08T13:00:00Z',
@@ -406,12 +411,22 @@ describe('logSighting', () => {
 describe('getSightings', () => {
   it('returns all sightings ordered by timestamp desc', () => {
     logSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'First', timestamp: '2026-04-08T10:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'First',
+      timestamp: '2026-04-08T10:00:00Z',
     });
     logSighting({
-      tree_id: 2, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: '/photo.jpg', notes: 'Second', timestamp: '2026-04-08T11:00:00Z',
+      tree_id: 2,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: '/photo.jpg',
+      notes: 'Second',
+      timestamp: '2026-04-08T11:00:00Z',
     });
     const sightings = getSightings();
     expect(sightings).toHaveLength(2);
@@ -420,12 +435,22 @@ describe('getSightings', () => {
 
   it('filters by hotspot_id when provided', () => {
     logSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'Hotspot 1', timestamp: '2026-04-08T10:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'Hotspot 1',
+      timestamp: '2026-04-08T10:00:00Z',
     });
     logSighting({
-      tree_id: 2, hotspot_id: 2, lat: 33.22, lon: -97.16,
-      photo_path: null, notes: 'Hotspot 2', timestamp: '2026-04-08T11:00:00Z',
+      tree_id: 2,
+      hotspot_id: 2,
+      lat: 33.22,
+      lon: -97.16,
+      photo_path: null,
+      notes: 'Hotspot 2',
+      timestamp: '2026-04-08T11:00:00Z',
     });
     const sightings = getSightings(1);
     expect(sightings).toHaveLength(1);
@@ -529,6 +554,7 @@ git commit -m "test: add sightings, badges, and quests tests to db.test.ts"
 ### Task 4: db.test.ts — Player and Settings Tests
 
 **Files:**
+
 - Modify: `tests/db.test.ts`
 
 - [ ] **Step 1: Add player tests**
@@ -640,6 +666,7 @@ git commit -m "test: add player and settings tests to db.test.ts"
 ### Task 5: Expand game-engine.test.ts — Handler Tests
 
 **Files:**
+
 - Modify: `tests/game-engine.test.ts`
 
 - [ ] **Step 1: Add vi.mock setup and imports at the top of the file**
@@ -677,15 +704,27 @@ const mockedDb = vi.mocked(db);
 
 function makePlayer(overrides: Partial<Player> = {}): Player {
   return {
-    id: 1, name: 'Tester', level: 1, xp: 0, score: 0, streak: 0, last_seen: null,
+    id: 1,
+    name: 'Tester',
+    level: 1,
+    xp: 0,
+    score: 0,
+    streak: 0,
+    last_seen: null,
     ...overrides,
   };
 }
 
 function makeBadge(id: number, overrides: Partial<Badge> = {}): Badge {
   return {
-    id, name: `Badge ${id}`, description: 'test', icon: 'icon',
-    condition_type: 'discover_count', condition_value: 99, earned: false, earned_at: null,
+    id,
+    name: `Badge ${id}`,
+    description: 'test',
+    icon: 'icon',
+    condition_type: 'discover_count',
+    condition_value: 99,
+    earned: false,
+    earned_at: null,
     ...overrides,
   };
 }
@@ -699,8 +738,14 @@ function setupDefaultMocks(): void {
   mockedDb.getSetting.mockReturnValue(undefined);
   mockedDb.addScore.mockReturnValue(makePlayer());
   mockedDb.logSighting.mockReturnValue({
-    id: 1, tree_id: null, hotspot_id: null, lat: 33.21, lon: -97.15,
-    photo_path: null, notes: '', timestamp: '2026-04-08T00:00:00Z',
+    id: 1,
+    tree_id: null,
+    hotspot_id: null,
+    lat: 33.21,
+    lon: -97.15,
+    photo_path: null,
+    notes: '',
+    timestamp: '2026-04-08T00:00:00Z',
   } as Sighting);
 }
 
@@ -720,9 +765,17 @@ Append to `tests/game-engine.test.ts`:
 describe('handleDiscoverZone', () => {
   it('returns score and zone_discovered events on success', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     const updated = makePlayer({ score: 100 });
     mockedDb.getPlayer
@@ -746,9 +799,17 @@ describe('handleDiscoverZone', () => {
 
   it('detects level-up when score crosses 500 boundary', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     mockedDb.getPlayer
       .mockReturnValueOnce(makePlayer({ score: 450, level: 1 }))
@@ -761,9 +822,17 @@ describe('handleDiscoverZone', () => {
 
   it('triggers badge award when criteria met', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     const player = makePlayer({ score: 100, level: 1 });
     mockedDb.getPlayer.mockReturnValue(player);
@@ -789,14 +858,17 @@ Append to `tests/game-engine.test.ts`:
 describe('handleLogSighting', () => {
   it('returns score event with correct points', () => {
     const updated = makePlayer({ score: 50 });
-    mockedDb.getPlayer
-      .mockReturnValueOnce(makePlayer())
-      .mockReturnValueOnce(updated);
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
     mockedDb.addScore.mockReturnValue(updated);
 
     const events = handleLogSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     });
 
     const scoreEvt = events.find((e) => e.type === 'score')!;
@@ -805,8 +877,13 @@ describe('handleLogSighting', () => {
 
   it('calls db.logSighting with the sighting data', () => {
     const sighting = {
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     };
     handleLogSighting(sighting);
     expect(mockedDb.logSighting).toHaveBeenCalledWith(sighting);
@@ -819,8 +896,13 @@ describe('handleLogSighting', () => {
     mockedDb.addScore.mockReturnValue(makePlayer({ score: 530, level: 2 }));
 
     const events = handleLogSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     });
 
     expect(events.some((e) => e.type === 'level_up')).toBe(true);
@@ -838,9 +920,7 @@ Append to `tests/game-engine.test.ts`:
 describe('handleCompleteQuest', () => {
   it('returns score event with correct points', () => {
     const updated = makePlayer({ score: 300 });
-    mockedDb.getPlayer
-      .mockReturnValueOnce(makePlayer())
-      .mockReturnValueOnce(updated);
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
     mockedDb.addScore.mockReturnValue(updated);
 
     const events = handleCompleteQuest(1);
@@ -884,6 +964,7 @@ git commit -m "test: add handler tests for handleDiscoverZone, handleLogSighting
 ### Task 6: Expand ollama.test.ts — Async Function Tests
 
 **Files:**
+
 - Modify: `tests/ollama.test.ts`
 
 - [ ] **Step 1: Add vi.mock setup and imports at the top of the file**
@@ -927,7 +1008,13 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockedDb.getSetting.mockReturnValue(undefined);
   mockedDb.getPlayer.mockReturnValue({
-    id: 1, name: 'Tester', level: 1, xp: 0, score: 0, streak: 0, last_seen: null,
+    id: 1,
+    name: 'Tester',
+    level: 1,
+    xp: 0,
+    score: 0,
+    streak: 0,
+    last_seen: null,
   } as Player);
   mockedDb.getAllHotspots.mockReturnValue([]);
 });
@@ -1016,7 +1103,9 @@ describe('chat', () => {
 
   it('throws on HTTP error status', async () => {
     mockFetch({ ok: false, status: 500, statusText: 'Internal Server Error' });
-    await expect(chat([{ role: 'user', content: 'test' }])).rejects.toThrow('Ollama request failed');
+    await expect(chat([{ role: 'user', content: 'test' }])).rejects.toThrow(
+      'Ollama request failed',
+    );
   });
 
   it('throws on API error in response body', async () => {
@@ -1062,9 +1151,17 @@ describe('generateQuest', () => {
   it('returns AI-generated quest when Ollama is online', async () => {
     mockedDb.getAllHotspots.mockReturnValue([
       {
-        id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-        radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-        species: 'Live Oak', notes: '', discovered: false,
+        id: 1,
+        name: 'Oak Alley',
+        lat: 33.21,
+        lon: -97.15,
+        radius_m: 50,
+        score: 4,
+        tree_count: 10,
+        nut_count: 8,
+        species: 'Live Oak',
+        notes: '',
+        discovered: false,
       },
     ]);
 
@@ -1091,9 +1188,17 @@ describe('generateQuest', () => {
   it('uses fallback quest when Ollama is offline', async () => {
     mockedDb.getAllHotspots.mockReturnValue([
       {
-        id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-        radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-        species: 'Live Oak', notes: '', discovered: false,
+        id: 1,
+        name: 'Oak Alley',
+        lat: 33.21,
+        lon: -97.15,
+        radius_m: 50,
+        score: 4,
+        tree_count: 10,
+        nut_count: 8,
+        species: 'Live Oak',
+        notes: '',
+        discovered: false,
       },
     ]);
     mockFetchReject(new Error('offline'));
@@ -1115,9 +1220,17 @@ describe('generateQuest', () => {
   it('falls back on fetch error during quest generation', async () => {
     mockedDb.getAllHotspots.mockReturnValue([
       {
-        id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-        radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-        species: 'Live Oak', notes: '', discovered: false,
+        id: 1,
+        name: 'Oak Alley',
+        lat: 33.21,
+        lon: -97.15,
+        radius_m: 50,
+        score: 4,
+        tree_count: 10,
+        nut_count: 8,
+        species: 'Live Oak',
+        notes: '',
+        discovered: false,
       },
     ]);
 
@@ -1153,6 +1266,7 @@ git commit -m "test: add checkOllamaStatus, chat, and generateQuest tests to oll
 ### Task 7: Raise Quality Gate Thresholds
 
 **Files:**
+
 - Modify: `quality-gates.yml:7-9`
 
 - [ ] **Step 1: Run full coverage to verify current numbers**
@@ -1166,10 +1280,10 @@ Expected: All tests pass. Coverage should be well above 60% lines, 60% branches,
 In `quality-gates.yml`, change lines 7-9:
 
 ```yaml
-    coverage:
-      lines: 60
-      branches: 60
-      functions: 50
+coverage:
+  lines: 60
+  branches: 60
+  functions: 50
 ```
 
 - [ ] **Step 3: Run the test quality gate to verify it passes**
