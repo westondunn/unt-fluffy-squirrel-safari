@@ -47,6 +47,12 @@ Your role:
 Always stay in character as Squirrel Scout. Never break character.`;
 }
 
+// ── output sanitization ──────────────────────────────────────────────────────
+
+export function sanitizeLlmOutput(text: string): string {
+  return text.replace(/<[^>]*>/g, '');
+}
+
 // ── status check ──────────────────────────────────────────────────────────────
 
 export async function checkOllamaStatus(): Promise<{ online: boolean; url: string }> {
@@ -115,7 +121,7 @@ export async function chat(messages: OllamaMessage[]): Promise<string> {
   const current = parseInt(db.getSetting('chat_count') ?? '0', 10);
   db.setSetting('chat_count', String(current + 1));
 
-  return data.message.content;
+  return sanitizeLlmOutput(data.message.content);
 }
 
 // ── quest generation ──────────────────────────────────────────────────────────
@@ -172,10 +178,12 @@ export async function generateQuest(): Promise<string> {
 
     if (!questText) throw new Error('Empty response');
 
-    // Save the quest to the database
-    db.addQuest(questText, target?.id ?? null);
+    const sanitizedQuest = sanitizeLlmOutput(questText);
 
-    return questText;
+    // Save the quest to the database
+    db.addQuest(sanitizedQuest, target?.id ?? null);
+
+    return sanitizedQuest;
   } catch {
     const fallback = fallbackQuest(target?.name ?? null);
     db.addQuest(fallback, target?.id ?? null);

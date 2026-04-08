@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { buildSystemPrompt, checkOllamaStatus, chat, generateQuest } from '../src/main/ollama';
+import { buildSystemPrompt, checkOllamaStatus, chat, generateQuest, sanitizeLlmOutput } from '../src/main/ollama';
 import type { SystemPromptContext } from '../src/main/ollama';
 import type { Hotspot, Player } from '../src/shared/types';
 
@@ -311,5 +311,68 @@ describe('generateQuest', () => {
     const quest = await generateQuest();
     expect(quest).toContain('Oak Alley');
     expect(mockedDb.addQuest).toHaveBeenCalled();
+  });
+});
+
+// ── LLM05: Improper Output Handling ─────────────────────────────────────────
+
+describe('sanitizeLlmOutput', () => {
+  it('strips script tags', () => {
+    expect(sanitizeLlmOutput('<script>alert("xss")</script>Hello')).toBe('alert("xss")Hello');
+  });
+
+  it('strips img tags with event handlers', () => {
+    expect(sanitizeLlmOutput('<img onerror="alert(1)" src="x">Look here')).toBe('Look here');
+  });
+
+  it('strips iframe tags', () => {
+    expect(sanitizeLlmOutput('<iframe src="http://evil.com"></iframe>Safe text')).toBe('Safe text');
+  });
+
+  it('preserves plain text content', () => {
+    expect(sanitizeLlmOutput('Just a normal squirrel sighting!')).toBe('Just a normal squirrel sighting!');
+  });
+
+  it('handles empty string', () => {
+    expect(sanitizeLlmOutput('')).toBe('');
+  });
+});
+
+describe('LLM05: chat sanitizes output', () => {
+  it('strips HTML tags from chat response', async () => {
+    mockFetch({
+      ok: true,
+      json: async () => ({ message: { content: 'Hello <script>alert("xss")</script>world' } }),
+    });
+
+    const result = await chat([{ role: 'user', content: 'Hi' }]);
+    expect(result).toBe('Hello alert("xss")world');
+    expect(result).not.toContain('<script>');
+  });
+});
+
+describe('LLM05: generateQuest sanitizes output', () => {
+  it('strips HTML tags from generated quest text', async () => {
+    mockedDb.getAllHotspots.mockReturnValue([
+      {
+        id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
+        radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
+        species: 'Live Oak', notes: '', discovered: false,
+      },
+    ]);
+
+    let callCount = 0;
+    global.fetch = vi.fn().mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) return Promise.resolve({ ok: true });
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ message: { content: 'Find squirrels <img onerror="hack()" src="x">at Oak Alley!' } }),
+      });
+    }) as unknown as typeof fetch;
+
+    const quest = await generateQuest();
+    expect(quest).not.toContain('<img');
+    expect(quest).toContain('Find squirrels');
   });
 });
