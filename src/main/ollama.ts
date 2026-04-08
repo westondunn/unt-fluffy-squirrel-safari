@@ -110,7 +110,10 @@ export async function chat(messages: OllamaMessage[]): Promise<string> {
     discoveredCount: 0, // we don't track per-hotspot discovery in current schema
   });
 
-  const fullMessages: OllamaMessage[] = [{ role: 'system', content: systemPrompt }, ...sanitizeMessages(messages)];
+  const fullMessages: OllamaMessage[] = [
+    { role: 'system', content: systemPrompt },
+    ...sanitizeMessages(messages),
+  ];
 
   const res = await fetch(`${url}/api/chat`, {
     method: 'POST',

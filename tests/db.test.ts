@@ -233,7 +233,7 @@ describe('getAllHotspots', () => {
 describe('queryHotspots', () => {
   it('returns hotspots within radius', () => {
     // Oak Alley is at 33.210, -97.150
-    const hotspots = queryHotspots(33.210, -97.150, 1);
+    const hotspots = queryHotspots(33.21, -97.15, 1);
     expect(hotspots.length).toBeGreaterThanOrEqual(1);
     expect(hotspots.some((h) => h.name === 'Oak Alley')).toBe(true);
   });
@@ -282,8 +282,8 @@ describe('logSighting', () => {
     const sighting = logSighting({
       tree_id: 1,
       hotspot_id: 1,
-      lat: 33.210,
-      lon: -97.150,
+      lat: 33.21,
+      lon: -97.15,
       photo_path: null,
       notes: 'Saw a squirrel!',
       timestamp: '2026-04-08T12:00:00Z',
@@ -296,8 +296,8 @@ describe('logSighting', () => {
     const sighting = logSighting({
       tree_id: null,
       hotspot_id: null,
-      lat: 33.210,
-      lon: -97.150,
+      lat: 33.21,
+      lon: -97.15,
       photo_path: null,
       notes: 'Quick sighting',
       timestamp: '2026-04-08T13:00:00Z',
@@ -310,12 +310,22 @@ describe('logSighting', () => {
 describe('getSightings', () => {
   it('returns all sightings ordered by timestamp desc', () => {
     logSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'First', timestamp: '2026-04-08T10:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'First',
+      timestamp: '2026-04-08T10:00:00Z',
     });
     logSighting({
-      tree_id: 2, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: '/photo.jpg', notes: 'Second', timestamp: '2026-04-08T11:00:00Z',
+      tree_id: 2,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: '/photo.jpg',
+      notes: 'Second',
+      timestamp: '2026-04-08T11:00:00Z',
     });
     const sightings = getSightings();
     expect(sightings).toHaveLength(2);
@@ -324,12 +334,22 @@ describe('getSightings', () => {
 
   it('filters by hotspot_id when provided', () => {
     logSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'Hotspot 1', timestamp: '2026-04-08T10:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'Hotspot 1',
+      timestamp: '2026-04-08T10:00:00Z',
     });
     logSighting({
-      tree_id: 2, hotspot_id: 2, lat: 33.22, lon: -97.16,
-      photo_path: null, notes: 'Hotspot 2', timestamp: '2026-04-08T11:00:00Z',
+      tree_id: 2,
+      hotspot_id: 2,
+      lat: 33.22,
+      lon: -97.16,
+      photo_path: null,
+      notes: 'Hotspot 2',
+      timestamp: '2026-04-08T11:00:00Z',
     });
     const sightings = getSightings(1);
     expect(sightings).toHaveLength(1);

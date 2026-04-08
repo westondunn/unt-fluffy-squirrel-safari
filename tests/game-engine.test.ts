@@ -30,15 +30,27 @@ const mockedDb = vi.mocked(db);
 
 function makePlayer(overrides: Partial<Player> = {}): Player {
   return {
-    id: 1, name: 'Tester', level: 1, xp: 0, score: 0, streak: 0, last_seen: null,
+    id: 1,
+    name: 'Tester',
+    level: 1,
+    xp: 0,
+    score: 0,
+    streak: 0,
+    last_seen: null,
     ...overrides,
   };
 }
 
 function makeBadge(id: number, overrides: Partial<Badge> = {}): Badge {
   return {
-    id, name: `Badge ${id}`, description: 'test', icon: 'icon',
-    condition_type: 'discover_count', condition_value: 99, earned: false, earned_at: null,
+    id,
+    name: `Badge ${id}`,
+    description: 'test',
+    icon: 'icon',
+    condition_type: 'discover_count',
+    condition_value: 99,
+    earned: false,
+    earned_at: null,
     ...overrides,
   };
 }
@@ -52,8 +64,14 @@ function setupDefaultMocks(): void {
   mockedDb.getSetting.mockReturnValue(undefined);
   mockedDb.addScore.mockReturnValue(makePlayer());
   mockedDb.logSighting.mockReturnValue({
-    id: 1, tree_id: null, hotspot_id: null, lat: 33.21, lon: -97.15,
-    photo_path: null, notes: '', timestamp: '2026-04-08T00:00:00Z',
+    id: 1,
+    tree_id: null,
+    hotspot_id: null,
+    lat: 33.21,
+    lon: -97.15,
+    photo_path: null,
+    notes: '',
+    timestamp: '2026-04-08T00:00:00Z',
   } as Sighting);
 }
 
@@ -253,9 +271,17 @@ describe('checkBadgeCriteria — time/special types', () => {
 describe('handleDiscoverZone', () => {
   it('returns score and zone_discovered events on success', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     const updated = makePlayer({ score: 100 });
     mockedDb.getPlayer
@@ -279,9 +305,17 @@ describe('handleDiscoverZone', () => {
 
   it('detects level-up when score crosses 500 boundary', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     mockedDb.getPlayer
       .mockReturnValueOnce(makePlayer({ score: 450, level: 1 }))
@@ -294,9 +328,17 @@ describe('handleDiscoverZone', () => {
 
   it('triggers badge award when criteria met', () => {
     mockedDb.discoverZone.mockReturnValue({
-      id: 1, name: 'Oak Alley', lat: 33.21, lon: -97.15,
-      radius_m: 50, score: 4, tree_count: 10, nut_count: 8,
-      species: 'Live Oak', notes: '', discovered: true,
+      id: 1,
+      name: 'Oak Alley',
+      lat: 33.21,
+      lon: -97.15,
+      radius_m: 50,
+      score: 4,
+      tree_count: 10,
+      nut_count: 8,
+      species: 'Live Oak',
+      notes: '',
+      discovered: true,
     } as Hotspot);
     const player = makePlayer({ score: 100, level: 1 });
     mockedDb.getPlayer.mockReturnValue(player);
@@ -316,14 +358,17 @@ describe('handleDiscoverZone', () => {
 describe('handleLogSighting', () => {
   it('returns score event with correct points', () => {
     const updated = makePlayer({ score: 50 });
-    mockedDb.getPlayer
-      .mockReturnValueOnce(makePlayer())
-      .mockReturnValueOnce(updated);
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
     mockedDb.addScore.mockReturnValue(updated);
 
     const events = handleLogSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     });
 
     const scoreEvt = events.find((e) => e.type === 'score')!;
@@ -332,8 +377,13 @@ describe('handleLogSighting', () => {
 
   it('calls db.logSighting with the sighting data', () => {
     const sighting = {
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     };
     handleLogSighting(sighting);
     expect(mockedDb.logSighting).toHaveBeenCalledWith(sighting);
@@ -346,8 +396,13 @@ describe('handleLogSighting', () => {
     mockedDb.addScore.mockReturnValue(makePlayer({ score: 530, level: 2 }));
 
     const events = handleLogSighting({
-      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
-      photo_path: null, notes: 'test', timestamp: '2026-04-08T00:00:00Z',
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.21,
+      lon: -97.15,
+      photo_path: null,
+      notes: 'test',
+      timestamp: '2026-04-08T00:00:00Z',
     });
 
     expect(events.some((e) => e.type === 'level_up')).toBe(true);
@@ -359,9 +414,7 @@ describe('handleLogSighting', () => {
 describe('handleCompleteQuest', () => {
   it('returns score event with correct points', () => {
     const updated = makePlayer({ score: 300 });
-    mockedDb.getPlayer
-      .mockReturnValueOnce(makePlayer())
-      .mockReturnValueOnce(updated);
+    mockedDb.getPlayer.mockReturnValueOnce(makePlayer()).mockReturnValueOnce(updated);
     mockedDb.addScore.mockReturnValue(updated);
 
     const events = handleCompleteQuest(1);
