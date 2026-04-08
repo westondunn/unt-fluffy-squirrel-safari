@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { initDB, closeDB } from './db';
@@ -38,7 +38,7 @@ async function takeScreenshots() {
   const dir = path.resolve(__dirname, '..', '..', 'docs', 'screenshots');
   fs.mkdirSync(dir, { recursive: true });
 
-  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const capture = async (name: string) => {
     const img = await mainWindow!.capturePage();
     fs.writeFileSync(path.join(dir, name), img.toPNG());
@@ -50,15 +50,21 @@ async function takeScreenshots() {
   await sleep(6000); // wait for map tiles
   await capture('map-view.png');
 
-  await exec(`document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('GUIDE')) b.click(); });`);
+  await exec(
+    `document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('GUIDE')) b.click(); });`,
+  );
   await sleep(500);
   await capture('field-guide.png');
 
-  await exec(`document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('BADGES')) b.click(); });`);
+  await exec(
+    `document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('BADGES')) b.click(); });`,
+  );
   await sleep(500);
   await capture('badges-view.png');
 
-  await exec(`document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('CHAT')) b.click(); });`);
+  await exec(
+    `document.querySelectorAll('button').forEach(b => { if(b.textContent.includes('CHAT')) b.click(); });`,
+  );
   await sleep(500);
   await capture('quest-complete.png');
 

@@ -19,8 +19,14 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  badges, hotspots, ollamaOnline,
-  chatMessages, chatLoading, onSendChat, onClearChat, onFocusHotspot,
+  badges,
+  hotspots,
+  ollamaOnline,
+  chatMessages,
+  chatLoading,
+  onSendChat,
+  onClearChat,
+  onFocusHotspot,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<Tab>('CHAT');
 
@@ -28,23 +34,27 @@ export function Sidebar({
   const tabIcons: Record<Tab, string> = { CHAT: '💬', GUIDE: '📖', BADGES: '🏅' };
 
   return (
-    <div style={{
-      width: '300px',
-      minWidth: '300px',
-      background: '#E8A060',
-      borderLeft: '4px solid #C84C0C',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-    }}>
-      {/* Tab bar — brick style */}
-      <div style={{
+    <div
+      style={{
+        width: '300px',
+        minWidth: '300px',
+        background: '#E8A060',
+        borderLeft: '4px solid #C84C0C',
         display: 'flex',
-        borderBottom: '4px solid #C84C0C',
-        flexShrink: 0,
-        background: '#000',
-      }}>
-        {tabs.map(tab => (
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Tab bar — brick style */}
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: '4px solid #C84C0C',
+          flexShrink: 0,
+          background: '#000',
+        }}
+      >
+        {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -81,9 +91,7 @@ export function Sidebar({
         {activeTab === 'GUIDE' && (
           <FieldGuideTab hotspots={hotspots} onFocusHotspot={onFocusHotspot} />
         )}
-        {activeTab === 'BADGES' && (
-          <BadgesTab badges={badges} />
-        )}
+        {activeTab === 'BADGES' && <BadgesTab badges={badges} />}
       </div>
     </div>
   );

@@ -67,16 +67,28 @@ describe('checkBadgeCriteria — discover_count', () => {
 describe('checkBadgeCriteria — discover_percent', () => {
   it('returns true when discovery percentage meets threshold', () => {
     // 8 out of 16 hotspots = 50%
-    expect(checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 8, totalHotspots: 16 }))).toBe(true);
-    expect(checkBadgeCriteria('discover_percent', 100, makeStats({ discoveries: 16, totalHotspots: 16 }))).toBe(true);
+    expect(
+      checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 8, totalHotspots: 16 })),
+    ).toBe(true);
+    expect(
+      checkBadgeCriteria(
+        'discover_percent',
+        100,
+        makeStats({ discoveries: 16, totalHotspots: 16 }),
+      ),
+    ).toBe(true);
   });
 
   it('returns false when discovery percentage is below threshold', () => {
-    expect(checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 7, totalHotspots: 16 }))).toBe(false);
+    expect(
+      checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 7, totalHotspots: 16 })),
+    ).toBe(false);
   });
 
   it('returns false when totalHotspots is 0', () => {
-    expect(checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 0, totalHotspots: 0 }))).toBe(false);
+    expect(
+      checkBadgeCriteria('discover_percent', 50, makeStats({ discoveries: 0, totalHotspots: 0 })),
+    ).toBe(false);
   });
 });
 

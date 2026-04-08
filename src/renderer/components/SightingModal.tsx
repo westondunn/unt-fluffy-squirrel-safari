@@ -9,7 +9,7 @@ interface SightingModalProps {
 
 export function SightingModal({ hotspots, onSubmit, onCancel }: SightingModalProps) {
   const [selectedHotspotId, setSelectedHotspotId] = useState<number | null>(
-    hotspots.length > 0 ? hotspots[0].id : null
+    hotspots.length > 0 ? hotspots[0].id : null,
   );
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -24,54 +24,62 @@ export function SightingModal({ hotspots, onSubmit, onCancel }: SightingModalPro
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(10, 10, 20, 0.85)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      backdropFilter: 'blur(4px)',
-    }}>
-      <div style={{
-        background: '#16213e',
-        border: '2px solid #e94560',
-        borderRadius: '8px',
-        padding: '24px',
-        width: '360px',
-        maxWidth: '90vw',
-        boxShadow: '0 8px 40px rgba(233,69,96,0.3)',
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(10, 10, 20, 0.85)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+        backdropFilter: 'blur(4px)',
+      }}
+    >
+      <div
+        style={{
+          background: '#16213e',
+          border: '2px solid #e94560',
+          borderRadius: '8px',
+          padding: '24px',
+          width: '360px',
+          maxWidth: '90vw',
+          boxShadow: '0 8px 40px rgba(233,69,96,0.3)',
+        }}
+      >
         {/* Title */}
-        <div style={{
-          fontFamily: '"Courier New", monospace',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          letterSpacing: '3px',
-          color: '#e94560',
-          marginBottom: '20px',
-          textAlign: 'center',
-        }}>
+        <div
+          style={{
+            fontFamily: '"Courier New", monospace',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            letterSpacing: '3px',
+            color: '#e94560',
+            marginBottom: '20px',
+            textAlign: 'center',
+          }}
+        >
           🐿️ LOG SIGHTING
         </div>
 
         {/* Location dropdown */}
         <div style={{ marginBottom: '16px' }}>
-          <label style={{
-            display: 'block',
-            fontFamily: '"Courier New", monospace',
-            fontSize: '10px',
-            fontWeight: 'bold',
-            letterSpacing: '2px',
-            color: '#fdcb6e',
-            marginBottom: '6px',
-          }}>
+          <label
+            style={{
+              display: 'block',
+              fontFamily: '"Courier New", monospace',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              letterSpacing: '2px',
+              color: '#fdcb6e',
+              marginBottom: '6px',
+            }}
+          >
             LOCATION
           </label>
           <select
             value={selectedHotspotId ?? ''}
-            onChange={e => setSelectedHotspotId(e.target.value ? Number(e.target.value) : null)}
+            onChange={(e) => setSelectedHotspotId(e.target.value ? Number(e.target.value) : null)}
             style={{
               width: '100%',
               background: '#0f3460',
@@ -85,28 +93,32 @@ export function SightingModal({ hotspots, onSubmit, onCancel }: SightingModalPro
             }}
           >
             <option value="">-- NO SPECIFIC ZONE --</option>
-            {hotspots.map(h => (
-              <option key={h.id} value={h.id}>{h.name}</option>
+            {hotspots.map((h) => (
+              <option key={h.id} value={h.id}>
+                {h.name}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Notes textarea */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{
-            display: 'block',
-            fontFamily: '"Courier New", monospace',
-            fontSize: '10px',
-            fontWeight: 'bold',
-            letterSpacing: '2px',
-            color: '#fdcb6e',
-            marginBottom: '6px',
-          }}>
+          <label
+            style={{
+              display: 'block',
+              fontFamily: '"Courier New", monospace',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              letterSpacing: '2px',
+              color: '#fdcb6e',
+              marginBottom: '6px',
+            }}
+          >
             NOTES (OPTIONAL)
           </label>
           <textarea
             value={notes}
-            onChange={e => setNotes(e.target.value)}
+            onChange={(e) => setNotes(e.target.value)}
             placeholder="Describe the sighting..."
             rows={3}
             style={{

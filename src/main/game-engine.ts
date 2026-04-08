@@ -19,11 +19,11 @@ export type GameEvent =
   | { type: 'zone_discovered'; payload: { hotspotId: number; hotspotName: string } };
 
 export interface BadgeStats {
-  discoveries: number;   // total hotspots visited
-  sightings: number;     // total sightings logged
-  photoCount: number;    // sightings with photos
-  chatCount: number;     // ollama chats
-  questCount: number;    // quests completed
+  discoveries: number; // total hotspots visited
+  sightings: number; // total sightings logged
+  photoCount: number; // sightings with photos
+  chatCount: number; // ollama chats
+  questCount: number; // quests completed
   score: number;
   level: number;
   totalBadges: number;
@@ -47,8 +47,9 @@ export function checkBadgeCriteria(
     case 'discover_count':
       return stats.discoveries >= criteriaValue;
     case 'discover_percent':
-      return stats.totalHotspots > 0 &&
-        (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue;
+      return (
+        stats.totalHotspots > 0 && (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue
+      );
     case 'sighting_count':
       return stats.sightings >= criteriaValue;
     case 'photo_count':

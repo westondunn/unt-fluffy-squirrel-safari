@@ -4,21 +4,21 @@
 
 :root {
   /* SMB3 NES palette */
-  --sky-blue: #5C94FC;
-  --sky-light: #88B4FF;
-  --ground-brown: #C84C0C;
-  --brick-tan: #E8A060;
-  --pipe-green: #00A800;
+  --sky-blue: #5c94fc;
+  --sky-light: #88b4ff;
+  --ground-brown: #c84c0c;
+  --brick-tan: #e8a060;
+  --pipe-green: #00a800;
   --pipe-dark: #005800;
-  --coin-gold: #F8D830;
-  --coin-orange: #E89818;
-  --fire-red: #E40058;
-  --mushroom-white: #FCF8FC;
-  --block-yellow: #F8B800;
-  --block-shadow: #A87820;
-  --text-dark: #38180C;
-  --text-light: #FCF8FC;
-  --cloud-white: #F8F8F8;
+  --coin-gold: #f8d830;
+  --coin-orange: #e89818;
+  --fire-red: #e40058;
+  --mushroom-white: #fcf8fc;
+  --block-yellow: #f8b800;
+  --block-shadow: #a87820;
+  --text-dark: #38180c;
+  --text-light: #fcf8fc;
+  --cloud-white: #f8f8f8;
 
   --bg: var(--sky-blue);
   --bg-panel: rgba(56, 24, 12, 0.92);
@@ -29,8 +29,18 @@
 }
 
 /* Reset */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 body {
   background: var(--sky-blue);
   color: var(--text-dark);
@@ -39,41 +49,85 @@ body {
 }
 
 /* Scrollbar — pipe green */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--ground-brown); }
-::-webkit-scrollbar-thumb { background: var(--pipe-green); border: 2px solid var(--pipe-dark); }
-::-webkit-scrollbar-thumb:hover { background: var(--coin-gold); }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ground-brown);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--pipe-green);
+  border: 2px solid var(--pipe-dark);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--coin-gold);
+}
 
 /* Animations */
 @keyframes toastIn {
-  0% { opacity: 0; transform: translateY(-30px) scale(0.8); }
-  60% { transform: translateY(8px) scale(1.05); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  60% {
+    transform: translateY(8px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes toastOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to   { opacity: 0; transform: translateY(-30px) scale(0.8); }
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
 }
 
 @keyframes coinBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @keyframes blockBump {
-  0%, 100% { transform: translateY(0); }
-  25% { transform: translateY(-4px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* Toast classes — question block style */
@@ -93,32 +147,42 @@ body {
   color: var(--text-dark);
   min-width: 280px;
   max-width: 380px;
-  box-shadow: 4px 4px 0px var(--block-shadow), inset 2px 2px 0px rgba(255,255,255,0.3);
+  box-shadow:
+    4px 4px 0px var(--block-shadow),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
 }
 
 .toast.level-up {
   background: var(--coin-gold);
   border-color: var(--coin-orange);
-  box-shadow: 4px 4px 0px var(--coin-orange), inset 2px 2px 0px rgba(255,255,255,0.3);
+  box-shadow:
+    4px 4px 0px var(--coin-orange),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.3);
 }
 
 .toast.badge {
   background: var(--pipe-green);
   border-color: var(--pipe-dark);
   color: var(--text-light);
-  box-shadow: 4px 4px 0px var(--pipe-dark), inset 2px 2px 0px rgba(255,255,255,0.2);
+  box-shadow:
+    4px 4px 0px var(--pipe-dark),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.2);
 }
 
 .toast.discovery {
   background: var(--fire-red);
-  border-color: #A80040;
+  border-color: #a80040;
   color: var(--text-light);
-  box-shadow: 4px 4px 0px #A80040, inset 2px 2px 0px rgba(255,255,255,0.2);
+  box-shadow:
+    4px 4px 0px #a80040,
+    inset 2px 2px 0px rgba(255, 255, 255, 0.2);
 }
 
 .toast.exiting {
   animation: toastOut 0.3s ease forwards;
 }
 
-.pulse { animation: pulse 2s infinite; }
+.pulse {
+  animation: pulse 2s infinite;
+}

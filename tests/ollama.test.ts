@@ -61,7 +61,12 @@ describe('buildSystemPrompt', () => {
   });
 
   it('includes discovered count in prompt', () => {
-    const prompt = buildSystemPrompt(makeContext({ discoveredCount: 4, hotspots: [makeHotspot(1), makeHotspot(2), makeHotspot(3), makeHotspot(4), makeHotspot(5)] }));
+    const prompt = buildSystemPrompt(
+      makeContext({
+        discoveredCount: 4,
+        hotspots: [makeHotspot(1), makeHotspot(2), makeHotspot(3), makeHotspot(4), makeHotspot(5)],
+      }),
+    );
     expect(prompt).toContain('4');
   });
 

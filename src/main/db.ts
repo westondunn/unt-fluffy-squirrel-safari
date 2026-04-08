@@ -177,7 +177,7 @@ export function getBadges(): Badge[] {
 let badgeColumnsChecked = false;
 function ensureBadgeColumns(d: Database): void {
   if (badgeColumnsChecked) return;
-  const info = d.exec("PRAGMA table_info(badges)");
+  const info = d.exec('PRAGMA table_info(badges)');
   if (!info.length) return;
   const cols = info[0].values.map((r) => r[1] as string);
   if (!cols.includes('earned')) {
@@ -261,9 +261,7 @@ export function addScore(points: number): Player {
   return getPlayer();
 }
 
-export function incrementStat(
-  stat: 'streak',
-): void {
+export function incrementStat(stat: 'streak'): void {
   const d = getDB();
   d.run(`UPDATE player SET ${stat} = ${stat} + 1 WHERE id = 1`);
   saveDB();

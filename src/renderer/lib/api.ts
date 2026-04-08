@@ -98,7 +98,7 @@ const fallbackApi: RendererApi = {
     warnMissingApi();
     return [];
   },
-  getSetting: async key => {
+  getSetting: async (key) => {
     warnMissingApi();
     return browserSettings.get(key);
   },

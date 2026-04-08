@@ -133,7 +133,10 @@ async function parseCsv(filePath: string): Promise<TreeRow[]> {
 
   let lineNum = 0;
   for await (const line of rl) {
-    if (lineNum === 0) { lineNum++; continue; } // skip header
+    if (lineNum === 0) {
+      lineNum++;
+      continue;
+    } // skip header
     lineNum++;
     // Remove BOM if present
     const clean = line.replace(/^\uFEFF/, '');
@@ -157,7 +160,22 @@ async function parseCsv(filePath: string): Promise<TreeRow[]> {
     if (isNaN(x) || isNaN(y)) continue;
 
     const { lat, lon } = mercatorToLatLon(x, y);
-    rows.push({ fid, northing, easting, elevation, notes, unt_id, name_comn, memorial, memorial_t, global_id, x, y, lat, lon });
+    rows.push({
+      fid,
+      northing,
+      easting,
+      elevation,
+      notes,
+      unt_id,
+      name_comn,
+      memorial,
+      memorial_t,
+      global_id,
+      x,
+      y,
+      lat,
+      lon,
+    });
   }
 
   return rows;
@@ -165,30 +183,174 @@ async function parseCsv(filePath: string): Promise<TreeRow[]> {
 
 // ─── Badge definitions ────────────────────────────────────────────────────────
 const BADGES = [
-  { name: 'First Steps', description: 'Discover your first tree', condition_type: 'discover_count', condition_value: 1, icon: '🌱' },
-  { name: 'Nut Detective', description: 'Discover 5 trees', condition_type: 'discover_count', condition_value: 5, icon: '🔍' },
-  { name: 'Tree Hugger', description: 'Discover 10 trees', condition_type: 'discover_count', condition_value: 10, icon: '🌳' },
-  { name: 'Campus Mapper', description: 'Discover 50% of trees', condition_type: 'discover_percent', condition_value: 50, icon: '🗺️' },
-  { name: 'Full Safari', description: 'Discover 100% of trees', condition_type: 'discover_percent', condition_value: 100, icon: '🏆' },
-  { name: 'Sharp Eye', description: 'Log your first sighting', condition_type: 'sighting_count', condition_value: 1, icon: '👁️' },
-  { name: 'Social Squirrel', description: 'Log 25 sightings', condition_type: 'sighting_count', condition_value: 25, icon: '🐿️' },
-  { name: 'Shutterburg', description: 'Take 10 photos', condition_type: 'photo_count', condition_value: 10, icon: '📸' },
-  { name: 'Photo Album', description: 'Take 25 photos', condition_type: 'photo_count', condition_value: 25, icon: '📷' },
-  { name: 'Squirrel Whisperer', description: 'Chat 25 times', condition_type: 'chat_count', condition_value: 25, icon: '💬' },
-  { name: "Scout's Friend", description: 'Chat 50 times', condition_type: 'chat_count', condition_value: 50, icon: '🤝' },
-  { name: 'Questmaster', description: 'Complete 10 quests', condition_type: 'quest_count', condition_value: 10, icon: '⚔️' },
-  { name: 'Early Bird', description: 'Visit before 8am', condition_type: 'time_before', condition_value: 8, icon: '🌅' },
-  { name: 'Night Owl', description: 'Visit after 9pm', condition_type: 'time_after', condition_value: 21, icon: '🦉' },
-  { name: 'Speed Runner', description: 'Discover 5 trees in one day', condition_type: 'daily_discover', condition_value: 5, icon: '⚡' },
-  { name: 'Dedicated Explorer', description: '7-day streak', condition_type: 'streak', condition_value: 7, icon: '🔥' },
-  { name: 'Oak Explorer', description: 'Visit all oak zones', condition_type: 'oak_zones', condition_value: 100, icon: '🌰' },
-  { name: 'Pecan Pro', description: 'Visit all pecan zones', condition_type: 'pecan_zones', condition_value: 100, icon: '🥜' },
-  { name: 'Memorial Hunter', description: 'Visit a memorial zone', condition_type: 'memorial_zone', condition_value: 1, icon: '🏛️' },
-  { name: 'Diversity Spotter', description: 'Visit a diverse species zone', condition_type: 'diverse_zone', condition_value: 1, icon: '🌈' },
-  { name: 'Elevation Expert', description: 'Visit 5 elevation zones', condition_type: 'elevation_count', condition_value: 5, icon: '⛰️' },
-  { name: 'Century Club', description: 'Reach 10,000 score', condition_type: 'score', condition_value: 10000, icon: '💯' },
-  { name: 'Legend', description: 'Reach level 20', condition_type: 'level', condition_value: 20, icon: '⭐' },
-  { name: 'Completionist', description: 'Earn 23 other badges', condition_type: 'all_badges', condition_value: 23, icon: '🎖️' },
+  {
+    name: 'First Steps',
+    description: 'Discover your first tree',
+    condition_type: 'discover_count',
+    condition_value: 1,
+    icon: '🌱',
+  },
+  {
+    name: 'Nut Detective',
+    description: 'Discover 5 trees',
+    condition_type: 'discover_count',
+    condition_value: 5,
+    icon: '🔍',
+  },
+  {
+    name: 'Tree Hugger',
+    description: 'Discover 10 trees',
+    condition_type: 'discover_count',
+    condition_value: 10,
+    icon: '🌳',
+  },
+  {
+    name: 'Campus Mapper',
+    description: 'Discover 50% of trees',
+    condition_type: 'discover_percent',
+    condition_value: 50,
+    icon: '🗺️',
+  },
+  {
+    name: 'Full Safari',
+    description: 'Discover 100% of trees',
+    condition_type: 'discover_percent',
+    condition_value: 100,
+    icon: '🏆',
+  },
+  {
+    name: 'Sharp Eye',
+    description: 'Log your first sighting',
+    condition_type: 'sighting_count',
+    condition_value: 1,
+    icon: '👁️',
+  },
+  {
+    name: 'Social Squirrel',
+    description: 'Log 25 sightings',
+    condition_type: 'sighting_count',
+    condition_value: 25,
+    icon: '🐿️',
+  },
+  {
+    name: 'Shutterburg',
+    description: 'Take 10 photos',
+    condition_type: 'photo_count',
+    condition_value: 10,
+    icon: '📸',
+  },
+  {
+    name: 'Photo Album',
+    description: 'Take 25 photos',
+    condition_type: 'photo_count',
+    condition_value: 25,
+    icon: '📷',
+  },
+  {
+    name: 'Squirrel Whisperer',
+    description: 'Chat 25 times',
+    condition_type: 'chat_count',
+    condition_value: 25,
+    icon: '💬',
+  },
+  {
+    name: "Scout's Friend",
+    description: 'Chat 50 times',
+    condition_type: 'chat_count',
+    condition_value: 50,
+    icon: '🤝',
+  },
+  {
+    name: 'Questmaster',
+    description: 'Complete 10 quests',
+    condition_type: 'quest_count',
+    condition_value: 10,
+    icon: '⚔️',
+  },
+  {
+    name: 'Early Bird',
+    description: 'Visit before 8am',
+    condition_type: 'time_before',
+    condition_value: 8,
+    icon: '🌅',
+  },
+  {
+    name: 'Night Owl',
+    description: 'Visit after 9pm',
+    condition_type: 'time_after',
+    condition_value: 21,
+    icon: '🦉',
+  },
+  {
+    name: 'Speed Runner',
+    description: 'Discover 5 trees in one day',
+    condition_type: 'daily_discover',
+    condition_value: 5,
+    icon: '⚡',
+  },
+  {
+    name: 'Dedicated Explorer',
+    description: '7-day streak',
+    condition_type: 'streak',
+    condition_value: 7,
+    icon: '🔥',
+  },
+  {
+    name: 'Oak Explorer',
+    description: 'Visit all oak zones',
+    condition_type: 'oak_zones',
+    condition_value: 100,
+    icon: '🌰',
+  },
+  {
+    name: 'Pecan Pro',
+    description: 'Visit all pecan zones',
+    condition_type: 'pecan_zones',
+    condition_value: 100,
+    icon: '🥜',
+  },
+  {
+    name: 'Memorial Hunter',
+    description: 'Visit a memorial zone',
+    condition_type: 'memorial_zone',
+    condition_value: 1,
+    icon: '🏛️',
+  },
+  {
+    name: 'Diversity Spotter',
+    description: 'Visit a diverse species zone',
+    condition_type: 'diverse_zone',
+    condition_value: 1,
+    icon: '🌈',
+  },
+  {
+    name: 'Elevation Expert',
+    description: 'Visit 5 elevation zones',
+    condition_type: 'elevation_count',
+    condition_value: 5,
+    icon: '⛰️',
+  },
+  {
+    name: 'Century Club',
+    description: 'Reach 10,000 score',
+    condition_type: 'score',
+    condition_value: 10000,
+    icon: '💯',
+  },
+  {
+    name: 'Legend',
+    description: 'Reach level 20',
+    condition_type: 'level',
+    condition_value: 20,
+    icon: '⭐',
+  },
+  {
+    name: 'Completionist',
+    description: 'Earn 23 other badges',
+    condition_type: 'all_badges',
+    condition_value: 23,
+    icon: '🎖️',
+  },
 ];
 
 // ─── Default settings ─────────────────────────────────────────────────────────
@@ -309,7 +471,21 @@ async function main() {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   for (const t of trees) {
-    treeStmt.run([t.fid, t.fid, t.unt_id, t.name_comn, t.memorial, t.memorial_t, t.notes, t.elevation, t.lat, t.lon, t.x, t.y, t.global_id]);
+    treeStmt.run([
+      t.fid,
+      t.fid,
+      t.unt_id,
+      t.name_comn,
+      t.memorial,
+      t.memorial_t,
+      t.notes,
+      t.elevation,
+      t.lat,
+      t.lon,
+      t.x,
+      t.y,
+      t.global_id,
+    ]);
   }
   treeStmt.free();
   db.run('COMMIT;');
@@ -335,7 +511,16 @@ async function main() {
     const name = `Hotspot ${i + 1}`;
     const speciesStr = Array.from(c.species).join(', ');
     const notes = `${c.trees.length} trees, ${c.species.size} species`;
-    hotspotStmt.run([name, c.centerLat, c.centerLon, c.score, c.trees.length, c.nutCount, speciesStr, notes]);
+    hotspotStmt.run([
+      name,
+      c.centerLat,
+      c.centerLon,
+      c.score,
+      c.trees.length,
+      c.nutCount,
+      speciesStr,
+      notes,
+    ]);
   }
   hotspotStmt.free();
   db.run('COMMIT;');

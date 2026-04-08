@@ -1,17 +1,12 @@
 {
-  appId: "edu.unt.fluffysquirrelsafari",
-  productName: "UNT Fluffy Squirrel Safari",
+  appId: 'edu.unt.fluffysquirrelsafari',
+  productName: 'UNT Fluffy Squirrel Safari',
   directories: {
-    output: "release",
+    output: 'release',
   },
-  files: [
-    "dist/**/*",
-    "data/squirrels.db",
-  ],
-  extraResources: [
-    { from: "data/squirrels.db", to: "squirrels.db" },
-  ],
+  files: ['dist/**/*', 'data/squirrels.db'],
+  extraResources: [{ from: 'data/squirrels.db', to: 'squirrels.db' }],
   win: {
-    target: "nsis",
+    target: 'nsis',
   },
 }
