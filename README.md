@@ -1,5 +1,10 @@
 # UNT Fluffy Squirrel Safari
 
+[![CI](https://github.com/westondunn/unt-fluffy-squirrel-safari/actions/workflows/ci.yml/badge.svg)](https://github.com/westondunn/unt-fluffy-squirrel-safari/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/westondunn/unt-fluffy-squirrel-safari/actions/workflows/codeql.yml/badge.svg)](https://github.com/westondunn/unt-fluffy-squirrel-safari/actions/workflows/codeql.yml)
+[![Coverage](https://img.shields.io/badge/coverage-43.7%25-yellow)](https://github.com/westondunn/unt-fluffy-squirrel-safari/actions/workflows/quality-gate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 An interactive Electron desktop app that helps UNT students find squirrels on campus. Built with real UNT tree inventory data (5,000+ trees), an AI-powered "Squirrel Scout" assistant via Ollama, and a Super Mario Bros 3-inspired retro game aesthetic.
 
 ## Features
