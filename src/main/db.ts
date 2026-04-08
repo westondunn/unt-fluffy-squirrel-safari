@@ -38,6 +38,7 @@ export async function initDB(): Promise<void> {
   const SQL = await initSqlJs();
   const buf = fs.readFileSync(dbPath);
   db = new SQL.Database(buf);
+  badgeColumnsChecked = false;
 }
 
 export function closeDB(): void {
@@ -131,7 +132,6 @@ export function logSighting(sighting: Omit<Sighting, 'id'>): Sighting {
       sighting.timestamp,
     ],
   );
-  saveDB();
 
   const stmt = d.prepare(
     'SELECT id, tree_id, hotspot_id, lat, lon, photo_path, notes, timestamp FROM sightings WHERE rowid = last_insert_rowid()',
@@ -139,6 +139,7 @@ export function logSighting(sighting: Omit<Sighting, 'id'>): Sighting {
   stmt.step();
   const row = stmt.getAsObject() as unknown as Sighting;
   stmt.free();
+  saveDB();
   return row;
 }
 
@@ -216,7 +217,6 @@ export function addQuest(questType: string, targetId: number | null): Quest {
     'INSERT INTO quest_log (quest_type, target_id, status, started_at, completed_at) VALUES (?, ?, ?, ?, NULL)',
     [questType, targetId ?? null, 'active', now],
   );
-  saveDB();
 
   const stmt = d.prepare(
     'SELECT id, quest_type, target_id, status, started_at, completed_at FROM quest_log WHERE rowid = last_insert_rowid()',
@@ -224,6 +224,7 @@ export function addQuest(questType: string, targetId: number | null): Quest {
   stmt.step();
   const row = stmt.getAsObject() as unknown as Quest;
   stmt.free();
+  saveDB();
   return row;
 }
 

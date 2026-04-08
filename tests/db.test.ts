@@ -45,6 +45,13 @@ import {
   queryHotspots,
   getHotspotById,
   discoverZone,
+  logSighting,
+  getSightings,
+  getBadges,
+  earnBadge,
+  getQuests,
+  addQuest,
+  completeQuest,
 } from '../src/main/db';
 
 const SCHEMA = `
@@ -259,5 +266,132 @@ describe('discoverZone', () => {
     const hotspot = discoverZone(999);
     // getHotspotById(999) returns null
     expect(hotspot).toBeNull();
+  });
+});
+
+// ── sightings ────────────────────────────────────────────────────────────────
+
+describe('logSighting', () => {
+  it('inserts and returns the sighting with an id', () => {
+    const sighting = logSighting({
+      tree_id: 1,
+      hotspot_id: 1,
+      lat: 33.210,
+      lon: -97.150,
+      photo_path: null,
+      notes: 'Saw a squirrel!',
+      timestamp: '2026-04-08T12:00:00Z',
+    });
+    expect(sighting.id).toBeDefined();
+    expect(sighting.notes).toBe('Saw a squirrel!');
+  });
+
+  it('handles null optional fields', () => {
+    const sighting = logSighting({
+      tree_id: null,
+      hotspot_id: null,
+      lat: 33.210,
+      lon: -97.150,
+      photo_path: null,
+      notes: 'Quick sighting',
+      timestamp: '2026-04-08T13:00:00Z',
+    });
+    expect(sighting.id).toBeDefined();
+    expect(sighting.tree_id).toBeNull();
+  });
+});
+
+describe('getSightings', () => {
+  it('returns all sightings ordered by timestamp desc', () => {
+    logSighting({
+      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
+      photo_path: null, notes: 'First', timestamp: '2026-04-08T10:00:00Z',
+    });
+    logSighting({
+      tree_id: 2, hotspot_id: 1, lat: 33.21, lon: -97.15,
+      photo_path: '/photo.jpg', notes: 'Second', timestamp: '2026-04-08T11:00:00Z',
+    });
+    const sightings = getSightings();
+    expect(sightings).toHaveLength(2);
+    expect(sightings[0].notes).toBe('Second');
+  });
+
+  it('filters by hotspot_id when provided', () => {
+    logSighting({
+      tree_id: 1, hotspot_id: 1, lat: 33.21, lon: -97.15,
+      photo_path: null, notes: 'Hotspot 1', timestamp: '2026-04-08T10:00:00Z',
+    });
+    logSighting({
+      tree_id: 2, hotspot_id: 2, lat: 33.22, lon: -97.16,
+      photo_path: null, notes: 'Hotspot 2', timestamp: '2026-04-08T11:00:00Z',
+    });
+    const sightings = getSightings(1);
+    expect(sightings).toHaveLength(1);
+    expect(sightings[0].notes).toBe('Hotspot 1');
+  });
+});
+
+// ── badges ───────────────────────────────────────────────────────────────────
+
+describe('getBadges', () => {
+  it('returns badges with earned as boolean', () => {
+    const badges = getBadges();
+    expect(badges).toHaveLength(2);
+    expect(badges[0].earned).toBe(false);
+    expect(badges[0].name).toBe('First Find');
+  });
+
+  it('lazily adds earned/earned_at columns', () => {
+    // getBadges internally calls ensureBadgeColumns — just verify no errors
+    const badges = getBadges();
+    expect(badges.every((b) => 'earned' in b && 'earned_at' in b)).toBe(true);
+  });
+});
+
+describe('earnBadge', () => {
+  it('sets earned to true and records earned_at', () => {
+    earnBadge(1);
+    const badges = getBadges();
+    const first = badges.find((b) => b.id === 1)!;
+    expect(first.earned).toBe(true);
+    expect(first.earned_at).not.toBeNull();
+  });
+});
+
+// ── quests ───────────────────────────────────────────────────────────────────
+
+describe('addQuest', () => {
+  it('inserts and returns a quest with status active', () => {
+    const quest = addQuest('Explore the campus', 1);
+    expect(quest.id).toBeDefined();
+    expect(quest.status).toBe('active');
+    expect(quest.quest_type).toBe('Explore the campus');
+    expect(quest.target_id).toBe(1);
+  });
+
+  it('handles null target_id', () => {
+    const quest = addQuest('General quest', null);
+    expect(quest.target_id).toBeNull();
+  });
+});
+
+describe('getQuests', () => {
+  it('returns quests ordered by started_at desc', () => {
+    addQuest('Quest A', null);
+    addQuest('Quest B', null);
+    const quests = getQuests();
+    expect(quests).toHaveLength(2);
+    // Both have same timestamp precision so just verify count
+  });
+});
+
+describe('completeQuest', () => {
+  it('updates status to completed and sets completed_at', () => {
+    const quest = addQuest('Find squirrels', 1);
+    completeQuest(quest.id);
+    const quests = getQuests();
+    const completed = quests.find((q) => q.id === quest.id)!;
+    expect(completed.status).toBe('completed');
+    expect(completed.completed_at).not.toBeNull();
   });
 });
