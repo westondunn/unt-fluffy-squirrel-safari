@@ -53,6 +53,14 @@ export function sanitizeLlmOutput(text: string): string {
   return text.replace(/<[^>]*>/g, '');
 }
 
+// ── input sanitization ──────────────────────────────────────────────────────
+
+export function sanitizeMessages(messages: OllamaMessage[]): OllamaMessage[] {
+  return messages
+    .filter((m) => m.role === 'user' || m.role === 'assistant')
+    .map((m) => ({ ...m, content: m.content.slice(0, 4096) }));
+}
+
 // ── status check ──────────────────────────────────────────────────────────────
 
 export async function checkOllamaStatus(): Promise<{ online: boolean; url: string }> {
@@ -96,7 +104,7 @@ export async function chat(messages: OllamaMessage[]): Promise<string> {
     discoveredCount: 0, // we don't track per-hotspot discovery in current schema
   });
 
-  const fullMessages: OllamaMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
+  const fullMessages: OllamaMessage[] = [{ role: 'system', content: systemPrompt }, ...sanitizeMessages(messages)];
 
   const res = await fetch(`${url}/api/chat`, {
     method: 'POST',
