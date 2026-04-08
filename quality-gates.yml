@@ -4,9 +4,9 @@ thresholds:
   test:
     pass_rate: 100
     coverage:
-      lines: 30
-      branches: 30
-      functions: 20
+      lines: 60
+      branches: 60
+      functions: 50
   lint:
     fix_on_failure: true
   data:
