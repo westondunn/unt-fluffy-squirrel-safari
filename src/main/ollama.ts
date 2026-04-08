@@ -90,10 +90,7 @@ export async function chat(messages: OllamaMessage[]): Promise<string> {
     discoveredCount: 0, // we don't track per-hotspot discovery in current schema
   });
 
-  const fullMessages: OllamaMessage[] = [
-    { role: 'system', content: systemPrompt },
-    ...messages,
-  ];
+  const fullMessages: OllamaMessage[] = [{ role: 'system', content: systemPrompt }, ...messages];
 
   const res = await fetch(`${url}/api/chat`, {
     method: 'POST',
@@ -134,9 +131,7 @@ export async function generateQuest(): Promise<string> {
   const hotspots = db.getAllHotspots();
 
   // Pick a random hotspot to target
-  const target = hotspots.length > 0
-    ? hotspots[Math.floor(Math.random() * hotspots.length)]
-    : null;
+  const target = hotspots.length > 0 ? hotspots[Math.floor(Math.random() * hotspots.length)] : null;
 
   const status = await checkOllamaStatus();
 
@@ -161,7 +156,8 @@ export async function generateQuest(): Promise<string> {
         messages: [
           {
             role: 'system',
-            content: 'You are Squirrel Scout, a fun quest generator for a campus squirrel-spotting game. Write short, exciting quest descriptions in 1-2 sentences.',
+            content:
+              'You are Squirrel Scout, a fun quest generator for a campus squirrel-spotting game. Write short, exciting quest descriptions in 1-2 sentences.',
           },
           { role: 'user', content: prompt },
         ],

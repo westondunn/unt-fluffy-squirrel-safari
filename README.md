@@ -18,15 +18,15 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Desktop Shell | Electron |
-| Frontend | React 18 + TypeScript |
-| Bundler | Vite |
-| Map | MapLibre GL JS + CartoDB Voyager tiles |
-| Database | SQLite via sql.js (WASM) |
-| AI | Ollama (local or remote) |
-| Testing | Vitest (62 tests) |
+| Layer         | Technology                             |
+| ------------- | -------------------------------------- |
+| Desktop Shell | Electron                               |
+| Frontend      | React 18 + TypeScript                  |
+| Bundler       | Vite                                   |
+| Map           | MapLibre GL JS + CartoDB Voyager tiles |
+| Database      | SQLite via sql.js (WASM)               |
+| AI            | Ollama (local or remote)               |
+| Testing       | Vitest (62 tests)                      |
 
 ## Getting Started
 
@@ -120,66 +120,75 @@ Each run uploads build artifacts so you can download and test installer output f
 ## Screenshots
 
 ### Campus Map with Tree Data
+
 ![Map View](docs/screenshots/map-view.png)
-*5,000+ trees plotted on the UNT campus map. Red dots = nut-producing trees (squirrel magnets), green dots = other species. Gold stars mark memorial trees. Pink circles highlight undiscovered squirrel hotspot zones.*
+_5,000+ trees plotted on the UNT campus map. Red dots = nut-producing trees (squirrel magnets), green dots = other species. Gold stars mark memorial trees. Pink circles highlight undiscovered squirrel hotspot zones._
 
 ### Badge Collection
+
 ![Badges](docs/screenshots/badges-view.png)
-*24 achievement badges to earn. "First Steps" for your first discovery, "Sharp Eye" for your first sighting, and 22 more challenges from "Nut Detective" to "Completionist".*
+_24 achievement badges to earn. "First Steps" for your first discovery, "Sharp Eye" for your first sighting, and 22 more challenges from "Nut Detective" to "Completionist"._
 
 ### AI-Generated Quests
+
 ![Quests](docs/screenshots/quest-complete.png)
-*The Squirrel Scout AI generates unique quests using Ollama. Complete quests for +300 points. Score shown in the SMB3-style HUD at top.*
+_The Squirrel Scout AI generates unique quests using Ollama. Complete quests for +300 points. Score shown in the SMB3-style HUD at top._
 
 ### Field Guide
+
 ![Field Guide](docs/screenshots/field-guide.png)
-*Pokédex-style field guide with all 16 discovery zones. Click any entry to fly the map to that location. Locked zones show "???" until you discover them.*
+_Pokédex-style field guide with all 16 discovery zones. Click any entry to fly the map to that location. Locked zones show "???" until you discover them._
 
 ## How to Play
 
 ### Discover Zones
+
 Click any pink hotspot circle on the map, then hit **"I'M HERE — DISCOVER ZONE"** to claim it. Each discovery earns **+100 points** and reveals the zone's name and tree data in the Field Guide.
 
 ### Log Sightings
+
 Click **"LOG SIGHTING"** to record a squirrel sighting. Pick a zone, add notes about what you saw. Each sighting earns **+50 points**.
 
 ### Complete Quests
+
 The AI generates unique quests based on unexplored areas. Complete them for **+300 points**. Hit SKIP to get a new quest if the current one doesn't work for you.
 
 ### Earn Badges
+
 24 badges track your progress:
 
-| Badge | How to Earn |
-|-------|------------|
-| First Steps | Discover your first zone |
-| Sharp Eye | Log your first sighting |
-| Nut Detective | Discover 5 zones |
-| Tree Hugger | Discover 10 zones |
-| Campus Mapper | Discover 50% of all zones |
-| Full Safari | Discover all 16 zones |
-| Shutterburg | Log 10 sightings with photos |
-| Social Squirrel | Log 25 sightings |
-| Squirrel Whisperer | Ask Scout 25 questions |
-| Questmaster | Complete 10 quests |
-| Early Bird | Log a sighting before 8am |
-| Night Owl | Log a sighting after 9pm |
-| Speed Runner | Discover 5 zones in one day |
-| Century Club | Reach 10,000 points |
-| Legend | Reach Level 20 |
-| Completionist | Earn all other badges |
+| Badge              | How to Earn                  |
+| ------------------ | ---------------------------- |
+| First Steps        | Discover your first zone     |
+| Sharp Eye          | Log your first sighting      |
+| Nut Detective      | Discover 5 zones             |
+| Tree Hugger        | Discover 10 zones            |
+| Campus Mapper      | Discover 50% of all zones    |
+| Full Safari        | Discover all 16 zones        |
+| Shutterburg        | Log 10 sightings with photos |
+| Social Squirrel    | Log 25 sightings             |
+| Squirrel Whisperer | Ask Scout 25 questions       |
+| Questmaster        | Complete 10 quests           |
+| Early Bird         | Log a sighting before 8am    |
+| Night Owl          | Log a sighting after 9pm     |
+| Speed Runner       | Discover 5 zones in one day  |
+| Century Club       | Reach 10,000 points          |
+| Legend             | Reach Level 20               |
+| Completionist      | Earn all other badges        |
 
 ### Level Up
+
 Every **500 points** = 1 level. Your level shows as "WORLD" in the top HUD bar.
 
 ## Map Legend
 
-| Symbol | Meaning |
-|--------|---------|
-| Red dot | Nut-producing tree (oak, pecan, hackberry, etc.) — squirrel food! |
-| Green dot | Non-nut tree (crapemyrtle, pine, magnolia, etc.) |
-| Gold star on dot | Memorial/dedicated tree |
-| Pink circle | Undiscovered hotspot zone |
-| Gold circle | Discovered hotspot zone |
+| Symbol           | Meaning                                                           |
+| ---------------- | ----------------------------------------------------------------- |
+| Red dot          | Nut-producing tree (oak, pecan, hackberry, etc.) — squirrel food! |
+| Green dot        | Non-nut tree (crapemyrtle, pine, magnolia, etc.)                  |
+| Gold star on dot | Memorial/dedicated tree                                           |
+| Pink circle      | Undiscovered hotspot zone                                         |
+| Gold circle      | Discovered hotspot zone                                           |
 
 ## Data Source
 

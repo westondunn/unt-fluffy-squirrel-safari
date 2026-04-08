@@ -13,33 +13,36 @@ export function useOllama(): OllamaState {
   const [messages, setMessages] = useState<OllamaMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = useCallback(async (text: string) => {
-    const userMsg: OllamaMessage = { role: 'user', content: text };
-    const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
-    setLoading(true);
-    try {
-      const result = await api.ollamaChat(nextMessages);
-      if (result.ok && result.response) {
-        const assistantMsg: OllamaMessage = { role: 'assistant', content: result.response };
-        setMessages(prev => [...prev, assistantMsg]);
-      } else {
+  const sendMessage = useCallback(
+    async (text: string) => {
+      const userMsg: OllamaMessage = { role: 'user', content: text };
+      const nextMessages = [...messages, userMsg];
+      setMessages(nextMessages);
+      setLoading(true);
+      try {
+        const result = await api.ollamaChat(nextMessages);
+        if (result.ok && result.response) {
+          const assistantMsg: OllamaMessage = { role: 'assistant', content: result.response };
+          setMessages((prev) => [...prev, assistantMsg]);
+        } else {
+          const errMsg: OllamaMessage = {
+            role: 'assistant',
+            content: result.error || 'ERROR: COULD NOT CONNECT TO SCOUT',
+          };
+          setMessages((prev) => [...prev, errMsg]);
+        }
+      } catch (_err) {
         const errMsg: OllamaMessage = {
           role: 'assistant',
-          content: result.error || 'ERROR: COULD NOT CONNECT TO SCOUT',
+          content: 'ERROR: SCOUT UNAVAILABLE',
         };
-        setMessages(prev => [...prev, errMsg]);
+        setMessages((prev) => [...prev, errMsg]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const errMsg: OllamaMessage = {
-        role: 'assistant',
-        content: 'ERROR: SCOUT UNAVAILABLE',
-      };
-      setMessages(prev => [...prev, errMsg]);
-    } finally {
-      setLoading(false);
-    }
-  }, [messages]);
+    },
+    [messages],
+  );
 
   const clearChat = useCallback(() => {
     setMessages([]);

@@ -1,0 +1,45 @@
+version: 1
+
+thresholds:
+  test:
+    pass_rate: 100
+    coverage:
+      lines: 80
+      branches: 70
+      functions: 80
+  lint:
+    fix_on_failure: true
+  data:
+    required_tables:
+      - trees
+      - hotspots
+      - squirrel_species
+    min_rows:
+      trees: 5000
+      hotspots: 1
+      squirrel_species: 1
+  security:
+    npm_audit_level: moderate
+    secrets_scan: true
+    license_deny:
+      - GPL-3.0
+      - AGPL-3.0
+    supply_chain:
+      lockfile_integrity: true
+      pinned_actions: true
+    sast:
+      electron_rules: true
+
+gates:
+  - name: lint
+    script: scripts/gates/lint.sh
+    order: 1
+  - name: test
+    script: scripts/gates/test.sh
+    order: 2
+  - name: data
+    script: scripts/gates/data.sh
+    order: 3
+  - name: security
+    script: scripts/gates/security.sh
+    order: 4

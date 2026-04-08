@@ -1,0 +1,11 @@
+title = "unt-fluffy-squirrel-safari gitleaks config"
+
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    '''node_modules''',
+    '''dist''',
+    '''release''',
+    '''\.git''',
+    '''package-lock\.json''',
+  ]

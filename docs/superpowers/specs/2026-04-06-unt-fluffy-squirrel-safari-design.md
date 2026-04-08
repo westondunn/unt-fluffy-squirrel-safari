@@ -20,6 +20,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 ### Database Schema (SQLite — `squirrels.db`)
 
 **trees**
+
 - id INTEGER PRIMARY KEY
 - unt_id INTEGER
 - lat REAL (from y column)
@@ -30,6 +31,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - global_id TEXT
 
 **hotspots**
+
 - id INTEGER PRIMARY KEY
 - name TEXT (auto-generated from location + dominant species)
 - center_lat REAL
@@ -41,6 +43,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - discovered BOOLEAN DEFAULT FALSE
 
 **sightings**
+
 - id INTEGER PRIMARY KEY
 - hotspot_id INTEGER (nullable FK)
 - lat REAL
@@ -50,6 +53,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 
 **badges**
+
 - id INTEGER PRIMARY KEY
 - name TEXT
 - description TEXT
@@ -60,6 +64,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - earned_at DATETIME
 
 **quest_log**
+
 - id INTEGER PRIMARY KEY
 - quest_text TEXT
 - target_hotspot_id INTEGER (nullable FK)
@@ -68,6 +73,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - completed_at DATETIME
 
 **player**
+
 - id INTEGER PRIMARY KEY DEFAULT 1
 - score INTEGER DEFAULT 0
 - level INTEGER DEFAULT 1
@@ -76,6 +82,7 @@ An interactive Electron desktop app that helps UNT students find squirrels on ca
 - total_quests_completed INTEGER DEFAULT 0
 
 **settings**
+
 - key TEXT PRIMARY KEY
 - value TEXT
 
@@ -149,6 +156,7 @@ Retro game NPC personality. Helpful, enthusiastic, short punchy sentences. Occas
 ### System Prompt
 
 Loaded with:
+
 - Full tree dataset summary (species counts, notable clusters)
 - Hotspot data (locations, scores, species composition)
 - UNT campus landmark context (building names, common areas)
@@ -172,6 +180,7 @@ Loaded with:
 ### Context Injection
 
 Before each chat message, inject:
+
 - Trees within the current map viewport as structured data
 - Nearest hotspots with scores and species
 - Player's current progress summary
@@ -203,32 +212,32 @@ Before each chat message, inject:
 
 ### Badges (24 total)
 
-| Badge | Criteria |
-|-------|----------|
-| Nut Detective | Visit 5 pecan/oak clusters |
-| Oak Explorer | Discover all oak-heavy zones |
-| Early Bird | Log a sighting before 8am |
-| Shutterburg | Log 10 sightings with photos |
-| Campus Mapper | Discover 50% of all zones |
-| Squirrel Whisperer | Ask Scout 25 questions |
-| Full Safari | Discover all zones |
-| First Steps | Discover your first zone |
-| Sharp Eye | Log your first sighting |
-| Pecan Pro | Visit all pecan clusters |
-| Night Owl | Log a sighting after 9pm |
-| Questmaster | Complete 10 quests |
-| Social Squirrel | Log 25 sightings |
-| Tree Hugger | Discover 10 zones |
-| Speed Runner | Discover 5 zones in one day |
-| Dedicated Explorer | Use the app 7 days in a row |
-| Photo Album | Log 25 sightings with photos |
-| Scout's Friend | Ask Scout 50 questions |
-| Completionist | Earn all other badges |
-| Elevation Expert | Visit zones at 5 different elevations |
-| Memorial Hunter | Discover a zone with memorial trees |
-| Diversity Spotter | Visit zones with 5+ different species |
-| Century Club | Reach 10,000 points |
-| Legend | Reach level 20 |
+| Badge              | Criteria                              |
+| ------------------ | ------------------------------------- |
+| Nut Detective      | Visit 5 pecan/oak clusters            |
+| Oak Explorer       | Discover all oak-heavy zones          |
+| Early Bird         | Log a sighting before 8am             |
+| Shutterburg        | Log 10 sightings with photos          |
+| Campus Mapper      | Discover 50% of all zones             |
+| Squirrel Whisperer | Ask Scout 25 questions                |
+| Full Safari        | Discover all zones                    |
+| First Steps        | Discover your first zone              |
+| Sharp Eye          | Log your first sighting               |
+| Pecan Pro          | Visit all pecan clusters              |
+| Night Owl          | Log a sighting after 9pm              |
+| Questmaster        | Complete 10 quests                    |
+| Social Squirrel    | Log 25 sightings                      |
+| Tree Hugger        | Discover 10 zones                     |
+| Speed Runner       | Discover 5 zones in one day           |
+| Dedicated Explorer | Use the app 7 days in a row           |
+| Photo Album        | Log 25 sightings with photos          |
+| Scout's Friend     | Ask Scout 50 questions                |
+| Completionist      | Earn all other badges                 |
+| Elevation Expert   | Visit zones at 5 different elevations |
+| Memorial Hunter    | Discover a zone with memorial trees   |
+| Diversity Spotter  | Visit zones with 5+ different species |
+| Century Club       | Reach 10,000 points                   |
+| Legend             | Reach level 20                        |
 
 ### Scoring & Levels
 

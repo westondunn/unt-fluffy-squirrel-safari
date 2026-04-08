@@ -67,6 +67,7 @@ unt-fluffy-squirrel-safari/
 ## Task 1: Project Scaffolding
 
 **Files:**
+
 - Create: `package.json`
 - Create: `tsconfig.json`
 - Create: `tsconfig.node.json`
@@ -192,20 +193,15 @@ export default defineConfig({
 
 ```json5
 {
-  appId: "edu.unt.fluffysquirrelsafari",
-  productName: "UNT Fluffy Squirrel Safari",
+  appId: 'edu.unt.fluffysquirrelsafari',
+  productName: 'UNT Fluffy Squirrel Safari',
   directories: {
-    output: "release",
+    output: 'release',
   },
-  files: [
-    "dist/**/*",
-    "data/squirrels.db",
-  ],
-  extraResources: [
-    { from: "data/squirrels.db", to: "squirrels.db" },
-  ],
+  files: ['dist/**/*', 'data/squirrels.db'],
+  extraResources: [{ from: 'data/squirrels.db', to: 'squirrels.db' }],
   win: {
-    target: "nsis",
+    target: 'nsis',
   },
 }
 ```
@@ -367,16 +363,16 @@ Create `src/renderer/index.html`:
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNT Fluffy Squirrel Safari</title>
-  <link href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css" rel="stylesheet" />
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="./main.tsx"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UNT Fluffy Squirrel Safari</title>
+    <link href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
 </html>
 ```
 
@@ -391,7 +387,11 @@ import App from './App';
 import './global.css';
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<React.StrictMode><App /></React.StrictMode>);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
 ```
 
 Create `src/renderer/App.tsx`:
@@ -399,7 +399,17 @@ Create `src/renderer/App.tsx`:
 ```tsx
 export default function App() {
   return (
-    <div style={{ background: '#1a1a2e', color: '#eee', fontFamily: '"Courier New", monospace', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div
+      style={{
+        background: '#1a1a2e',
+        color: '#eee',
+        fontFamily: '"Courier New", monospace',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <h1 style={{ color: '#e94560' }}>UNT FLUFFY SQUIRREL SAFARI</h1>
     </div>
   );
@@ -409,14 +419,29 @@ export default function App() {
 Create `src/renderer/global.css`:
 
 ```css
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-body { background: #1a1a2e; color: #eeeeee; font-family: 'Courier New', monospace; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+body {
+  background: #1a1a2e;
+  color: #eeeeee;
+  font-family: 'Courier New', monospace;
+}
 ```
 
 - [ ] **Step 11: Install dependencies and verify Electron launches**
 
 Run:
+
 ```bash
 npm install
 npm run build:main
@@ -437,6 +462,7 @@ git commit -m "feat: scaffold Electron + React + Vite + TypeScript project"
 ## Task 2: Data Pipeline — CSV to SQLite
 
 **Files:**
+
 - Create: `scripts/build-db.ts`
 - Create: `tests/build-db.test.ts`
 - Copy: source CSV to `data/trees.csv`
@@ -554,7 +580,9 @@ function clusterTrees(trees: TreeForClustering[], maxDistM: number): Cluster[] {
 
     const center_lat = group.reduce((s, t) => s + t.lat, 0) / group.length;
     const center_lon = group.reduce((s, t) => s + t.lon, 0) / group.length;
-    const radius_m = Math.max(...group.map((t) => haversineMeters(center_lat, center_lon, t.lat, t.lon)));
+    const radius_m = Math.max(
+      ...group.map((t) => haversineMeters(center_lat, center_lon, t.lat, t.lon)),
+    );
     const nut_tree_count = group.filter((t) => t.isNutTree).length;
     const uniqueSpecies = new Set(group.map((t) => t.species)).size;
 
@@ -589,10 +617,10 @@ describe('mercatorToLatLon', () => {
 describe('clusterTrees', () => {
   it('groups nearby nut trees into clusters', () => {
     const trees: TreeForClustering[] = [
-      { id: 1, lat: 33.210, lon: -97.152, species: 'Pecan', isNutTree: true },
+      { id: 1, lat: 33.21, lon: -97.152, species: 'Pecan', isNutTree: true },
       { id: 2, lat: 33.2101, lon: -97.1521, species: 'Live Oak', isNutTree: true },
       { id: 3, lat: 33.2102, lon: -97.1519, species: 'Post Oak', isNutTree: true },
-      { id: 4, lat: 33.230, lon: -97.170, species: 'Pecan', isNutTree: true }, // far away
+      { id: 4, lat: 33.23, lon: -97.17, species: 'Pecan', isNutTree: true }, // far away
     ];
     const clusters = clusterTrees(trees, 50);
     expect(clusters.length).toBe(1); // Only one cluster of 3, tree 4 is alone
@@ -602,7 +630,7 @@ describe('clusterTrees', () => {
 
   it('skips clusters with fewer than 3 trees', () => {
     const trees: TreeForClustering[] = [
-      { id: 1, lat: 33.210, lon: -97.152, species: 'Pecan', isNutTree: true },
+      { id: 1, lat: 33.21, lon: -97.152, species: 'Pecan', isNutTree: true },
       { id: 2, lat: 33.2101, lon: -97.1521, species: 'Live Oak', isNutTree: true },
     ];
     const clusters = clusterTrees(trees, 50);
@@ -612,7 +640,7 @@ describe('clusterTrees', () => {
   it('scores higher for more nut trees and species diversity', () => {
     const trees: TreeForClustering[] = Array.from({ length: 20 }, (_, i) => ({
       id: i,
-      lat: 33.210 + i * 0.0001,
+      lat: 33.21 + i * 0.0001,
       lon: -97.152,
       species: ['Pecan', 'Live Oak', 'Post Oak', 'Hackberry'][i % 4],
       isNutTree: true,
@@ -639,8 +667,16 @@ import path from 'path';
 import Database from 'better-sqlite3';
 
 const NUT_SPECIES = new Set([
-  'Live Oak', 'Post Oak', 'Red Oak', 'Bur Oak', 'Oak',
-  'Pecan', 'Hackberry', 'Cedar Elm', 'Sweetgum', 'Mesquite',
+  'Live Oak',
+  'Post Oak',
+  'Red Oak',
+  'Bur Oak',
+  'Oak',
+  'Pecan',
+  'Hackberry',
+  'Cedar Elm',
+  'Sweetgum',
+  'Mesquite',
 ]);
 
 function mercatorToLatLon(x: number, y: number) {
@@ -740,7 +776,7 @@ function clusterNutTrees(trees: ParsedTree[], maxDistM: number): Cluster[] {
     const center_lon = group.reduce((s, t) => s + t.lon, 0) / group.length;
     const radius_m = Math.max(
       15,
-      Math.max(...group.map((t) => haversineMeters(center_lat, center_lon, t.lat, t.lon)))
+      Math.max(...group.map((t) => haversineMeters(center_lat, center_lon, t.lat, t.lon))),
     );
     const nut_tree_count = group.filter((t) => t.isNutTree).length;
     const uniqueSpecies = new Set(group.map((t) => t.species));
@@ -775,30 +811,174 @@ function clusterNutTrees(trees: ParsedTree[], maxDistM: number): Cluster[] {
 }
 
 const BADGES = [
-  { name: 'First Steps', description: 'Discover your first zone', icon: '👣', criteria_type: 'discover_count', criteria_value: 1 },
-  { name: 'Nut Detective', description: 'Visit 5 pecan/oak clusters', icon: '🔍', criteria_type: 'discover_count', criteria_value: 5 },
-  { name: 'Tree Hugger', description: 'Discover 10 zones', icon: '🌳', criteria_type: 'discover_count', criteria_value: 10 },
-  { name: 'Campus Mapper', description: 'Discover 50% of all zones', icon: '🗺️', criteria_type: 'discover_percent', criteria_value: 50 },
-  { name: 'Full Safari', description: 'Discover all zones', icon: '🏆', criteria_type: 'discover_percent', criteria_value: 100 },
-  { name: 'Sharp Eye', description: 'Log your first sighting', icon: '👁️', criteria_type: 'sighting_count', criteria_value: 1 },
-  { name: 'Shutterburg', description: 'Log 10 sightings with photos', icon: '📸', criteria_type: 'photo_count', criteria_value: 10 },
-  { name: 'Social Squirrel', description: 'Log 25 sightings', icon: '🐿️', criteria_type: 'sighting_count', criteria_value: 25 },
-  { name: 'Photo Album', description: 'Log 25 sightings with photos', icon: '🖼️', criteria_type: 'photo_count', criteria_value: 25 },
-  { name: 'Squirrel Whisperer', description: 'Ask Scout 25 questions', icon: '💬', criteria_type: 'chat_count', criteria_value: 25 },
-  { name: "Scout's Friend", description: 'Ask Scout 50 questions', icon: '🤝', criteria_type: 'chat_count', criteria_value: 50 },
-  { name: 'Questmaster', description: 'Complete 10 quests', icon: '⚔️', criteria_type: 'quest_count', criteria_value: 10 },
-  { name: 'Early Bird', description: 'Log a sighting before 8am', icon: '🌅', criteria_type: 'time_before', criteria_value: 8 },
-  { name: 'Night Owl', description: 'Log a sighting after 9pm', icon: '🦉', criteria_type: 'time_after', criteria_value: 21 },
-  { name: 'Speed Runner', description: 'Discover 5 zones in one day', icon: '⚡', criteria_type: 'daily_discover', criteria_value: 5 },
-  { name: 'Dedicated Explorer', description: 'Use the app 7 days in a row', icon: '📅', criteria_type: 'streak', criteria_value: 7 },
-  { name: 'Oak Explorer', description: 'Discover all oak-heavy zones', icon: '🌿', criteria_type: 'oak_zones', criteria_value: 100 },
-  { name: 'Pecan Pro', description: 'Visit all pecan clusters', icon: '🥜', criteria_type: 'pecan_zones', criteria_value: 100 },
-  { name: 'Memorial Hunter', description: 'Discover a zone with memorial trees', icon: '🪦', criteria_type: 'memorial_zone', criteria_value: 1 },
-  { name: 'Diversity Spotter', description: 'Visit zones with 5+ species', icon: '🌈', criteria_type: 'diverse_zone', criteria_value: 1 },
-  { name: 'Elevation Expert', description: 'Visit zones at 5 different elevations', icon: '⛰️', criteria_type: 'elevation_count', criteria_value: 5 },
-  { name: 'Century Club', description: 'Reach 10,000 points', icon: '💯', criteria_type: 'score', criteria_value: 10000 },
-  { name: 'Legend', description: 'Reach level 20', icon: '⭐', criteria_type: 'level', criteria_value: 20 },
-  { name: 'Completionist', description: 'Earn all other badges', icon: '👑', criteria_type: 'all_badges', criteria_value: 23 },
+  {
+    name: 'First Steps',
+    description: 'Discover your first zone',
+    icon: '👣',
+    criteria_type: 'discover_count',
+    criteria_value: 1,
+  },
+  {
+    name: 'Nut Detective',
+    description: 'Visit 5 pecan/oak clusters',
+    icon: '🔍',
+    criteria_type: 'discover_count',
+    criteria_value: 5,
+  },
+  {
+    name: 'Tree Hugger',
+    description: 'Discover 10 zones',
+    icon: '🌳',
+    criteria_type: 'discover_count',
+    criteria_value: 10,
+  },
+  {
+    name: 'Campus Mapper',
+    description: 'Discover 50% of all zones',
+    icon: '🗺️',
+    criteria_type: 'discover_percent',
+    criteria_value: 50,
+  },
+  {
+    name: 'Full Safari',
+    description: 'Discover all zones',
+    icon: '🏆',
+    criteria_type: 'discover_percent',
+    criteria_value: 100,
+  },
+  {
+    name: 'Sharp Eye',
+    description: 'Log your first sighting',
+    icon: '👁️',
+    criteria_type: 'sighting_count',
+    criteria_value: 1,
+  },
+  {
+    name: 'Shutterburg',
+    description: 'Log 10 sightings with photos',
+    icon: '📸',
+    criteria_type: 'photo_count',
+    criteria_value: 10,
+  },
+  {
+    name: 'Social Squirrel',
+    description: 'Log 25 sightings',
+    icon: '🐿️',
+    criteria_type: 'sighting_count',
+    criteria_value: 25,
+  },
+  {
+    name: 'Photo Album',
+    description: 'Log 25 sightings with photos',
+    icon: '🖼️',
+    criteria_type: 'photo_count',
+    criteria_value: 25,
+  },
+  {
+    name: 'Squirrel Whisperer',
+    description: 'Ask Scout 25 questions',
+    icon: '💬',
+    criteria_type: 'chat_count',
+    criteria_value: 25,
+  },
+  {
+    name: "Scout's Friend",
+    description: 'Ask Scout 50 questions',
+    icon: '🤝',
+    criteria_type: 'chat_count',
+    criteria_value: 50,
+  },
+  {
+    name: 'Questmaster',
+    description: 'Complete 10 quests',
+    icon: '⚔️',
+    criteria_type: 'quest_count',
+    criteria_value: 10,
+  },
+  {
+    name: 'Early Bird',
+    description: 'Log a sighting before 8am',
+    icon: '🌅',
+    criteria_type: 'time_before',
+    criteria_value: 8,
+  },
+  {
+    name: 'Night Owl',
+    description: 'Log a sighting after 9pm',
+    icon: '🦉',
+    criteria_type: 'time_after',
+    criteria_value: 21,
+  },
+  {
+    name: 'Speed Runner',
+    description: 'Discover 5 zones in one day',
+    icon: '⚡',
+    criteria_type: 'daily_discover',
+    criteria_value: 5,
+  },
+  {
+    name: 'Dedicated Explorer',
+    description: 'Use the app 7 days in a row',
+    icon: '📅',
+    criteria_type: 'streak',
+    criteria_value: 7,
+  },
+  {
+    name: 'Oak Explorer',
+    description: 'Discover all oak-heavy zones',
+    icon: '🌿',
+    criteria_type: 'oak_zones',
+    criteria_value: 100,
+  },
+  {
+    name: 'Pecan Pro',
+    description: 'Visit all pecan clusters',
+    icon: '🥜',
+    criteria_type: 'pecan_zones',
+    criteria_value: 100,
+  },
+  {
+    name: 'Memorial Hunter',
+    description: 'Discover a zone with memorial trees',
+    icon: '🪦',
+    criteria_type: 'memorial_zone',
+    criteria_value: 1,
+  },
+  {
+    name: 'Diversity Spotter',
+    description: 'Visit zones with 5+ species',
+    icon: '🌈',
+    criteria_type: 'diverse_zone',
+    criteria_value: 1,
+  },
+  {
+    name: 'Elevation Expert',
+    description: 'Visit zones at 5 different elevations',
+    icon: '⛰️',
+    criteria_type: 'elevation_count',
+    criteria_value: 5,
+  },
+  {
+    name: 'Century Club',
+    description: 'Reach 10,000 points',
+    icon: '💯',
+    criteria_type: 'score',
+    criteria_value: 10000,
+  },
+  {
+    name: 'Legend',
+    description: 'Reach level 20',
+    icon: '⭐',
+    criteria_type: 'level',
+    criteria_value: 20,
+  },
+  {
+    name: 'Completionist',
+    description: 'Earn all other badges',
+    icon: '👑',
+    criteria_type: 'all_badges',
+    criteria_value: 23,
+  },
 ];
 
 function buildDatabase(csvPath: string, dbPath: string) {
@@ -884,11 +1064,20 @@ function buildDatabase(csvPath: string, dbPath: string) {
   // Insert trees
   const trees = parseCSV(csvPath);
   const insertTree = db.prepare(
-    'INSERT INTO trees (id, unt_id, lat, lon, elevation, species, memorial, global_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO trees (id, unt_id, lat, lon, elevation, species, memorial, global_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
   );
   const insertMany = db.transaction((items: ParsedTree[]) => {
     for (const t of items) {
-      insertTree.run(t.fid, t.unt_id, t.lat, t.lon, t.elevation, t.species, t.memorial ? 1 : 0, t.global_id);
+      insertTree.run(
+        t.fid,
+        t.unt_id,
+        t.lat,
+        t.lon,
+        t.elevation,
+        t.species,
+        t.memorial ? 1 : 0,
+        t.global_id,
+      );
     }
   });
   insertMany(trees);
@@ -905,16 +1094,24 @@ function buildDatabase(csvPath: string, dbPath: string) {
   }
 
   const insertHotspot = db.prepare(
-    'INSERT INTO hotspots (name, center_lat, center_lon, radius_m, tree_count, nut_tree_count, squirrel_score) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO hotspots (name, center_lat, center_lon, radius_m, tree_count, nut_tree_count, squirrel_score) VALUES (?, ?, ?, ?, ?, ?, ?)',
   );
   for (const c of clusters) {
-    insertHotspot.run(c.name, c.center_lat, c.center_lon, c.radius_m, c.trees.length, c.nut_tree_count, c.squirrel_score);
+    insertHotspot.run(
+      c.name,
+      c.center_lat,
+      c.center_lon,
+      c.radius_m,
+      c.trees.length,
+      c.nut_tree_count,
+      c.squirrel_score,
+    );
   }
   console.log(`Created ${clusters.length} hotspot zones`);
 
   // Insert badges
   const insertBadge = db.prepare(
-    'INSERT INTO badges (name, description, icon, criteria_type, criteria_value) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO badges (name, description, icon, criteria_type, criteria_value) VALUES (?, ?, ?, ?, ?)',
   );
   for (const b of BADGES) {
     insertBadge.run(b.name, b.description, b.icon, b.criteria_type, b.criteria_value);
@@ -934,11 +1131,13 @@ buildDatabase(csvPath, dbPath);
 - [ ] **Step 7: Run the build-db script**
 
 Run:
+
 ```bash
 npx tsx scripts/build-db.ts
 ```
 
 Expected output:
+
 ```
 Inserted 5053 trees
 Created NN hotspot zones
@@ -949,6 +1148,7 @@ Database built: .../data/squirrels.db
 - [ ] **Step 8: Verify database contents**
 
 Run:
+
 ```bash
 npx tsx -e "
 const Database = require('better-sqlite3');
@@ -975,6 +1175,7 @@ git commit -m "feat: data pipeline — CSV to SQLite with hotspot clustering"
 ## Task 3: Database Layer (Main Process)
 
 **Files:**
+
 - Create: `src/main/db.ts`
 - Create: `tests/db.test.ts`
 
@@ -1000,9 +1201,9 @@ afterAll(() => {
 describe('tree queries', () => {
   it('fetches trees within a bounding box', () => {
     // UNT campus rough bounds
-    const rows = db.prepare(
-      'SELECT * FROM trees WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? LIMIT 10'
-    ).all(33.20, 33.22, -97.16, -97.14);
+    const rows = db
+      .prepare('SELECT * FROM trees WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? LIMIT 10')
+      .all(33.2, 33.22, -97.16, -97.14);
     expect(rows.length).toBeGreaterThan(0);
   });
 });
@@ -1067,9 +1268,9 @@ export function closeDB() {
 
 // Trees
 export function queryTrees(bounds: BoundingBox): Tree[] {
-  return db.prepare(
-    'SELECT * FROM trees WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?'
-  ).all(bounds.minLat, bounds.maxLat, bounds.minLon, bounds.maxLon) as Tree[];
+  return db
+    .prepare('SELECT * FROM trees WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?')
+    .all(bounds.minLat, bounds.maxLat, bounds.minLon, bounds.maxLon) as Tree[];
 }
 
 // Hotspots
@@ -1081,9 +1282,11 @@ export function queryHotspots(lat: number, lon: number, radiusKm: number): Hotsp
   // Approximate bounding box for radius
   const dLat = radiusKm / 111.0;
   const dLon = radiusKm / (111.0 * Math.cos((lat * Math.PI) / 180));
-  return db.prepare(
-    'SELECT * FROM hotspots WHERE center_lat BETWEEN ? AND ? AND center_lon BETWEEN ? AND ?'
-  ).all(lat - dLat, lat + dLat, lon - dLon, lon + dLon) as Hotspot[];
+  return db
+    .prepare(
+      'SELECT * FROM hotspots WHERE center_lat BETWEEN ? AND ? AND center_lon BETWEEN ? AND ?',
+    )
+    .all(lat - dLat, lat + dLat, lon - dLon, lon + dLon) as Hotspot[];
 }
 
 export function discoverZone(hotspotId: number): Hotspot {
@@ -1093,15 +1296,19 @@ export function discoverZone(hotspotId: number): Hotspot {
 
 // Sightings
 export function logSighting(sighting: Omit<Sighting, 'id' | 'timestamp'>): Sighting {
-  const result = db.prepare(
-    'INSERT INTO sightings (hotspot_id, lat, lon, photo_path, notes) VALUES (?, ?, ?, ?, ?)'
-  ).run(sighting.hotspot_id, sighting.lat, sighting.lon, sighting.photo_path, sighting.notes);
+  const result = db
+    .prepare(
+      'INSERT INTO sightings (hotspot_id, lat, lon, photo_path, notes) VALUES (?, ?, ?, ?, ?)',
+    )
+    .run(sighting.hotspot_id, sighting.lat, sighting.lon, sighting.photo_path, sighting.notes);
   return db.prepare('SELECT * FROM sightings WHERE id = ?').get(result.lastInsertRowid) as Sighting;
 }
 
 export function getSightings(hotspotId?: number): Sighting[] {
   if (hotspotId) {
-    return db.prepare('SELECT * FROM sightings WHERE hotspot_id = ? ORDER BY timestamp DESC').all(hotspotId) as Sighting[];
+    return db
+      .prepare('SELECT * FROM sightings WHERE hotspot_id = ? ORDER BY timestamp DESC')
+      .all(hotspotId) as Sighting[];
   }
   return db.prepare('SELECT * FROM sightings ORDER BY timestamp DESC').all() as Sighting[];
 }
@@ -1121,14 +1328,16 @@ export function getQuests(): Quest[] {
 }
 
 export function addQuest(questText: string, targetHotspotId: number | null): Quest {
-  const result = db.prepare(
-    'INSERT INTO quest_log (quest_text, target_hotspot_id) VALUES (?, ?)'
-  ).run(questText, targetHotspotId);
+  const result = db
+    .prepare('INSERT INTO quest_log (quest_text, target_hotspot_id) VALUES (?, ?)')
+    .run(questText, targetHotspotId);
   return db.prepare('SELECT * FROM quest_log WHERE id = ?').get(result.lastInsertRowid) as Quest;
 }
 
 export function completeQuest(questId: number) {
-  db.prepare('UPDATE quest_log SET status = "completed", completed_at = datetime("now") WHERE id = ?').run(questId);
+  db.prepare(
+    'UPDATE quest_log SET status = "completed", completed_at = datetime("now") WHERE id = ?',
+  ).run(questId);
 }
 
 // Player
@@ -1146,13 +1355,17 @@ export function addScore(points: number) {
   return getPlayer();
 }
 
-export function incrementStat(stat: 'total_discoveries' | 'total_sightings' | 'total_quests_completed') {
+export function incrementStat(
+  stat: 'total_discoveries' | 'total_sightings' | 'total_quests_completed',
+) {
   db.prepare(`UPDATE player SET ${stat} = ${stat} + 1 WHERE id = 1`).run();
 }
 
 // Settings
 export function getSetting(key: string): string | undefined {
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as { value: string } | undefined;
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as
+    | { value: string }
+    | undefined;
   return row?.value;
 }
 
@@ -1173,6 +1386,7 @@ git commit -m "feat: SQLite database layer with tree, hotspot, game queries"
 ## Task 4: Game Engine
 
 **Files:**
+
 - Create: `src/main/game-engine.ts`
 - Create: `tests/game-engine.test.ts`
 
@@ -1192,19 +1406,40 @@ function calculateLevel(score: number): number {
 function checkBadgeCriteria(
   criteriaType: string,
   criteriaValue: number,
-  stats: { discoveries: number; sightings: number; photoCount: number; chatCount: number; questCount: number; score: number; level: number; totalBadges: number; earnedBadges: number; totalHotspots: number }
+  stats: {
+    discoveries: number;
+    sightings: number;
+    photoCount: number;
+    chatCount: number;
+    questCount: number;
+    score: number;
+    level: number;
+    totalBadges: number;
+    earnedBadges: number;
+    totalHotspots: number;
+  },
 ): boolean {
   switch (criteriaType) {
-    case 'discover_count': return stats.discoveries >= criteriaValue;
-    case 'discover_percent': return (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue;
-    case 'sighting_count': return stats.sightings >= criteriaValue;
-    case 'photo_count': return stats.photoCount >= criteriaValue;
-    case 'chat_count': return stats.chatCount >= criteriaValue;
-    case 'quest_count': return stats.questCount >= criteriaValue;
-    case 'score': return stats.score >= criteriaValue;
-    case 'level': return stats.level >= criteriaValue;
-    case 'all_badges': return stats.earnedBadges >= criteriaValue;
-    default: return false;
+    case 'discover_count':
+      return stats.discoveries >= criteriaValue;
+    case 'discover_percent':
+      return (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue;
+    case 'sighting_count':
+      return stats.sightings >= criteriaValue;
+    case 'photo_count':
+      return stats.photoCount >= criteriaValue;
+    case 'chat_count':
+      return stats.chatCount >= criteriaValue;
+    case 'quest_count':
+      return stats.questCount >= criteriaValue;
+    case 'score':
+      return stats.score >= criteriaValue;
+    case 'level':
+      return stats.level >= criteriaValue;
+    case 'all_badges':
+      return stats.earnedBadges >= criteriaValue;
+    default:
+      return false;
   }
 }
 
@@ -1223,8 +1458,16 @@ describe('calculateLevel', () => {
 
 describe('checkBadgeCriteria', () => {
   const baseStats = {
-    discoveries: 0, sightings: 0, photoCount: 0, chatCount: 0,
-    questCount: 0, score: 0, level: 1, totalBadges: 24, earnedBadges: 0, totalHotspots: 25,
+    discoveries: 0,
+    sightings: 0,
+    photoCount: 0,
+    chatCount: 0,
+    questCount: 0,
+    score: 0,
+    level: 1,
+    totalBadges: 24,
+    earnedBadges: 0,
+    totalHotspots: 25,
   };
 
   it('checks discover_count', () => {
@@ -1233,8 +1476,12 @@ describe('checkBadgeCriteria', () => {
   });
 
   it('checks discover_percent', () => {
-    expect(checkBadgeCriteria('discover_percent', 50, { ...baseStats, discoveries: 12 })).toBe(false);
-    expect(checkBadgeCriteria('discover_percent', 50, { ...baseStats, discoveries: 13 })).toBe(true);
+    expect(checkBadgeCriteria('discover_percent', 50, { ...baseStats, discoveries: 12 })).toBe(
+      false,
+    );
+    expect(checkBadgeCriteria('discover_percent', 50, { ...baseStats, discoveries: 13 })).toBe(
+      true,
+    );
   });
 
   it('checks score', () => {
@@ -1281,19 +1528,29 @@ export function checkBadgeCriteria(
     totalBadges: number;
     earnedBadges: number;
     totalHotspots: number;
-  }
+  },
 ): boolean {
   switch (criteriaType) {
-    case 'discover_count': return stats.discoveries >= criteriaValue;
-    case 'discover_percent': return (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue;
-    case 'sighting_count': return stats.sightings >= criteriaValue;
-    case 'photo_count': return stats.photoCount >= criteriaValue;
-    case 'chat_count': return stats.chatCount >= criteriaValue;
-    case 'quest_count': return stats.questCount >= criteriaValue;
-    case 'score': return stats.score >= criteriaValue;
-    case 'level': return stats.level >= criteriaValue;
-    case 'all_badges': return stats.earnedBadges >= criteriaValue;
-    default: return false;
+    case 'discover_count':
+      return stats.discoveries >= criteriaValue;
+    case 'discover_percent':
+      return (stats.discoveries / stats.totalHotspots) * 100 >= criteriaValue;
+    case 'sighting_count':
+      return stats.sightings >= criteriaValue;
+    case 'photo_count':
+      return stats.photoCount >= criteriaValue;
+    case 'chat_count':
+      return stats.chatCount >= criteriaValue;
+    case 'quest_count':
+      return stats.questCount >= criteriaValue;
+    case 'score':
+      return stats.score >= criteriaValue;
+    case 'level':
+      return stats.level >= criteriaValue;
+    case 'all_badges':
+      return stats.earnedBadges >= criteriaValue;
+    default:
+      return false;
   }
 }
 
@@ -1320,7 +1577,13 @@ export function handleDiscoverZone(hotspotId: number): GameEvent[] {
   return events;
 }
 
-export function handleLogSighting(sighting: { hotspot_id: number | null; lat: number; lon: number; photo_path: string | null; notes: string }): GameEvent[] {
+export function handleLogSighting(sighting: {
+  hotspot_id: number | null;
+  lat: number;
+  lon: number;
+  photo_path: string | null;
+  notes: string;
+}): GameEvent[] {
   const events: GameEvent[] = [];
   db.logSighting(sighting);
   db.incrementStat('total_sightings');
@@ -1387,6 +1650,7 @@ git commit -m "feat: game engine — scoring, levels, badge checking"
 ## Task 5: Ollama Client
 
 **Files:**
+
 - Create: `src/main/ollama.ts`
 - Create: `tests/ollama.test.ts`
 
@@ -1452,7 +1716,10 @@ export function buildSystemPrompt(context: {
   discoveries: number;
 }): string {
   const hotspotInfo = context.hotspots
-    .map((h) => `- ${h.name} (squirrel score: ${h.squirrel_score}/5, at ${h.center_lat.toFixed(4)}, ${h.center_lon.toFixed(4)})`)
+    .map(
+      (h) =>
+        `- ${h.name} (squirrel score: ${h.squirrel_score}/5, at ${h.center_lat.toFixed(4)}, ${h.center_lon.toFixed(4)})`,
+    )
     .join('\n');
 
   return `You are the Squirrel Scout, a retro-game NPC guide helping UNT students find squirrels on campus.
@@ -1468,10 +1735,7 @@ Keep responses under 150 words. Be fun and encouraging!`;
 }
 
 export async function checkOllamaStatus(): Promise<{ online: boolean; url: string }> {
-  const urls = [
-    db.getSetting('ollama_url') || 'http://localhost:11434',
-    'http://localhost:11434',
-  ];
+  const urls = [db.getSetting('ollama_url') || 'http://localhost:11434', 'http://localhost:11434'];
 
   for (const url of [...new Set(urls)]) {
     try {
@@ -1497,10 +1761,7 @@ export async function chat(messages: OllamaMessage[]): Promise<string> {
     discoveries: player.total_discoveries,
   });
 
-  const fullMessages = [
-    { role: 'system' as const, content: systemPrompt },
-    ...messages,
-  ];
+  const fullMessages = [{ role: 'system' as const, content: systemPrompt }, ...messages];
 
   const res = await fetch(`${status.url}/api/chat`, {
     method: 'POST',
@@ -1543,7 +1804,8 @@ export async function generateQuest(): Promise<string> {
       messages: [
         {
           role: 'system',
-          content: 'You are a retro game quest generator. Write a short, fun quest description (1-2 sentences) for a squirrel-finding mission on a university campus. Be specific about the location. Use arcade-game style language.',
+          content:
+            'You are a retro game quest generator. Write a short, fun quest description (1-2 sentences) for a squirrel-finding mission on a university campus. Be specific about the location. Use arcade-game style language.',
         },
         {
           role: 'user',
@@ -1575,6 +1837,7 @@ git commit -m "feat: Ollama client with system prompt, status check, quest gener
 ## Task 6: IPC Bridge
 
 **Files:**
+
 - Create: `src/main/ipc.ts`
 - Modify: `src/main/index.ts` — wire up DB + IPC
 
@@ -1593,7 +1856,7 @@ export function registerIPC() {
   // Database queries
   ipcMain.handle('db:query-trees', (_e, bounds: BoundingBox) => db.queryTrees(bounds));
   ipcMain.handle('db:query-hotspots', (_e, lat: number, lon: number, radiusKm: number) =>
-    db.queryHotspots(lat, lon, radiusKm)
+    db.queryHotspots(lat, lon, radiusKm),
   );
   ipcMain.handle('db:all-hotspots', () => db.getAllHotspots());
   ipcMain.handle('db:get-setting', (_e, key: string) => db.getSetting(key));
@@ -1618,17 +1881,15 @@ export function registerIPC() {
 
   // Game actions
   ipcMain.handle('game:discover-zone', (_e, hotspotId: number) =>
-    gameEngine.handleDiscoverZone(hotspotId)
+    gameEngine.handleDiscoverZone(hotspotId),
   );
-  ipcMain.handle('game:log-sighting', (_e, sighting) =>
-    gameEngine.handleLogSighting(sighting)
-  );
+  ipcMain.handle('game:log-sighting', (_e, sighting) => gameEngine.handleLogSighting(sighting));
   ipcMain.handle('game:get-badges', () => db.getBadges());
   ipcMain.handle('game:get-player', () => db.getPlayer());
   ipcMain.handle('game:get-quests', () => db.getQuests());
   ipcMain.handle('game:get-sightings', (_e, hotspotId?: number) => db.getSightings(hotspotId));
   ipcMain.handle('game:complete-quest', (_e, questId: number) =>
-    gameEngine.handleCompleteQuest(questId)
+    gameEngine.handleCompleteQuest(questId),
   );
 }
 ```
@@ -1692,10 +1953,18 @@ Create `src/renderer/lib/api.ts`:
 declare global {
   interface Window {
     api: {
-      queryTrees: (bounds: import('@shared/types').BoundingBox) => Promise<import('@shared/types').Tree[]>;
-      queryHotspots: (lat: number, lon: number, radiusKm: number) => Promise<import('@shared/types').Hotspot[]>;
+      queryTrees: (
+        bounds: import('@shared/types').BoundingBox,
+      ) => Promise<import('@shared/types').Tree[]>;
+      queryHotspots: (
+        lat: number,
+        lon: number,
+        radiusKm: number,
+      ) => Promise<import('@shared/types').Hotspot[]>;
       getAllHotspots: () => Promise<import('@shared/types').Hotspot[]>;
-      ollamaChat: (messages: import('@shared/types').OllamaMessage[]) => Promise<{ ok: boolean; response?: string; error?: string }>;
+      ollamaChat: (
+        messages: import('@shared/types').OllamaMessage[],
+      ) => Promise<{ ok: boolean; response?: string; error?: string }>;
       ollamaStatus: () => Promise<{ online: boolean; url: string }>;
       ollamaGenerateQuest: () => Promise<{ ok: boolean; quest?: string; error?: string }>;
       logSighting: (sighting: any) => Promise<import('./../../main/game-engine').GameEvent[]>;
@@ -1725,6 +1994,7 @@ git commit -m "feat: IPC bridge connecting renderer to main process"
 ## Task 7: Retro Theme CSS + App Layout Shell
 
 **Files:**
+
 - Modify: `src/renderer/global.css`
 - Modify: `src/renderer/App.tsx`
 - Create: `src/renderer/components/TopBar.tsx`
@@ -1737,8 +2007,18 @@ git commit -m "feat: IPC bridge connecting renderer to main process"
 Replace `src/renderer/global.css`:
 
 ```css
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 
 :root {
   --bg: #1a1a2e;
@@ -1759,26 +2039,53 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
 
 /* Toast animation */
 @keyframes toastIn {
-  0% { transform: translateY(-100%) scale(0.8); opacity: 0; }
-  50% { transform: translateY(10px) scale(1.05); }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
+  0% {
+    transform: translateY(-100%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(10px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 @keyframes toastOut {
-  to { transform: translateY(-100%); opacity: 0; }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 }
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(233,69,96,0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(233,69,96,0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(233, 69, 96, 0);
+  }
 }
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .toast {
@@ -1794,11 +2101,21 @@ body {
   font-weight: bold;
   letter-spacing: 2px;
   text-transform: uppercase;
-  animation: toastIn 0.4s ease-out, toastOut 0.3s 2.5s ease-in forwards;
+  animation:
+    toastIn 0.4s ease-out,
+    toastOut 0.3s 2.5s ease-in forwards;
 }
-.toast.level-up { color: var(--gold); border-color: var(--gold); }
-.toast.badge { color: var(--purple); border-color: var(--purple); }
-.toast.discovery { color: var(--accent); }
+.toast.level-up {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.toast.badge {
+  color: var(--purple);
+  border-color: var(--purple);
+}
+.toast.discovery {
+  color: var(--accent);
+}
 ```
 
 - [ ] **Step 2: Create useGameState hook**
@@ -1844,7 +2161,9 @@ export function useGameState() {
     setState({ player, badges, hotspots, quests, ollamaOnline: ollamaStatus.online });
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const addToast = useCallback((text: string, type: ToastMessage['type']) => {
     const id = Date.now();
@@ -1852,14 +2171,18 @@ export function useGameState() {
     setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3000);
   }, []);
 
-  const processEvents = useCallback((events: any[]) => {
-    for (const event of events) {
-      if (event.type === 'level_up') addToast(`LEVEL UP! LV.${event.payload.level}`, 'level-up');
-      if (event.type === 'badge_earned') addToast(`BADGE: ${event.payload.name}`, 'badge');
-      if (event.type === 'zone_discovered') addToast(`ZONE DISCOVERED: ${event.payload.name}`, 'discovery');
-    }
-    refresh();
-  }, [addToast, refresh]);
+  const processEvents = useCallback(
+    (events: any[]) => {
+      for (const event of events) {
+        if (event.type === 'level_up') addToast(`LEVEL UP! LV.${event.payload.level}`, 'level-up');
+        if (event.type === 'badge_earned') addToast(`BADGE: ${event.payload.name}`, 'badge');
+        if (event.type === 'zone_discovered')
+          addToast(`ZONE DISCOVERED: ${event.payload.name}`, 'discovery');
+      }
+      refresh();
+    },
+    [addToast, refresh],
+  );
 
   return { ...state, toasts, refresh, processEvents, addToast };
 }
@@ -1881,18 +2204,20 @@ interface Props {
 export default function TopBar({ player, badges, ollamaOnline }: Props) {
   const earned = badges.filter((b) => b.earned).length;
   return (
-    <div style={{
-      background: 'var(--accent)',
-      padding: '6px 16px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      fontWeight: 'bold',
-      fontSize: 14,
-      color: 'var(--bg)',
-      letterSpacing: 2,
-      userSelect: 'none',
-    }}>
+    <div
+      style={{
+        background: 'var(--accent)',
+        padding: '6px 16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontWeight: 'bold',
+        fontSize: 14,
+        color: 'var(--bg)',
+        letterSpacing: 2,
+        userSelect: 'none',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 18 }}>&#x1F43F;&#xFE0F;</span>
         <span>UNT FLUFFY SQUIRREL SAFARI</span>
@@ -1900,7 +2225,9 @@ export default function TopBar({ player, badges, ollamaOnline }: Props) {
       <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
         <span>SCORE: {player?.score ?? 0}</span>
         <span>LV.{player?.level ?? 1}</span>
-        <span>&#x1F3C5; {earned}/{badges.length}</span>
+        <span>
+          &#x1F3C5; {earned}/{badges.length}
+        </span>
         <span style={{ color: ollamaOnline ? '#00ff88' : '#ff4444' }}>
           {ollamaOnline ? 'SCOUT ONLINE' : 'SCOUT OFFLINE'}
         </span>
@@ -1932,13 +2259,15 @@ export default function Sidebar({ chatTab, guideTab, badgesTab }: Props) {
   ];
 
   return (
-    <div style={{
-      width: 300,
-      background: 'var(--bg)',
-      borderLeft: '2px solid var(--accent)',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div
+      style={{
+        width: 300,
+        background: 'var(--bg)',
+        borderLeft: '2px solid var(--accent)',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <div style={{ display: 'flex', borderBottom: '2px solid var(--accent)' }}>
         {tabs.map((tab) => (
           <button
@@ -2012,13 +2341,33 @@ export default function App() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <TopBar player={game.player} badges={game.badges} ollamaOnline={game.ollamaOnline} />
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <div style={{ flex: 1, background: 'var(--bg-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div
+          style={{
+            flex: 1,
+            background: 'var(--bg-deep)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <span style={{ color: 'var(--bg-dark)', fontSize: 48, fontWeight: 'bold' }}>MAP</span>
         </div>
         <Sidebar
-          chatTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Chat coming soon...</div>}
-          guideTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Field guide coming soon...</div>}
-          badgesTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Badges coming soon...</div>}
+          chatTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Chat coming soon...
+            </div>
+          }
+          guideTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Field guide coming soon...
+            </div>
+          }
+          badgesTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Badges coming soon...
+            </div>
+          }
         />
       </div>
       <ToastContainer toasts={game.toasts} />
@@ -2030,6 +2379,7 @@ export default function App() {
 - [ ] **Step 7: Verify the layout renders**
 
 Run:
+
 ```bash
 npm run dev
 ```
@@ -2048,6 +2398,7 @@ git commit -m "feat: retro arcade UI shell — top bar, sidebar, toast system"
 ## Task 8: MapLibre GL Map View
 
 **Files:**
+
 - Create: `src/renderer/components/MapView.tsx`
 - Modify: `src/renderer/App.tsx` — integrate MapView
 
@@ -2066,7 +2417,7 @@ interface Props {
 }
 
 // UNT campus center
-const UNT_CENTER: [number, number] = [-97.1525, 33.2100];
+const UNT_CENTER: [number, number] = [-97.1525, 33.21];
 
 export default function MapView({ hotspots, onDiscoverZone }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -2165,12 +2516,7 @@ export default function MapView({ hotspots, onDiscoverZone }: Props) {
       type: 'symbol',
       source: 'hotspots',
       layout: {
-        'text-field': [
-          'case',
-          ['get', 'discovered'],
-          ['get', 'name'],
-          '???',
-        ],
+        'text-field': ['case', ['get', 'discovered'], ['get', 'name'], '???'],
         'text-size': 11,
         'text-offset': [0, 2],
       },
@@ -2211,7 +2557,18 @@ export default function MapView({ hotspots, onDiscoverZone }: Props) {
         maxLon: bounds.getEast(),
       });
 
-      const NUT_SPECIES = new Set(['Live Oak', 'Post Oak', 'Red Oak', 'Bur Oak', 'Oak', 'Pecan', 'Hackberry', 'Cedar Elm', 'Sweetgum', 'Mesquite']);
+      const NUT_SPECIES = new Set([
+        'Live Oak',
+        'Post Oak',
+        'Red Oak',
+        'Bur Oak',
+        'Oak',
+        'Pecan',
+        'Hackberry',
+        'Cedar Elm',
+        'Sweetgum',
+        'Mesquite',
+      ]);
 
       const geojson: GeoJSON.FeatureCollection = {
         type: 'FeatureCollection',
@@ -2241,7 +2598,9 @@ export default function MapView({ hotspots, onDiscoverZone }: Props) {
     loadTrees();
     m.on('moveend', loadTrees);
 
-    return () => { m.off('moveend', loadTrees); };
+    return () => {
+      m.off('moveend', loadTrees);
+    };
   }, [loaded]);
 
   return (
@@ -2250,26 +2609,34 @@ export default function MapView({ hotspots, onDiscoverZone }: Props) {
 
       {/* Hotspot popup */}
       {selectedHotspot && (
-        <div style={{
-          position: 'absolute',
-          bottom: 60,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'var(--bg)',
-          border: '2px solid var(--accent)',
-          borderRadius: 4,
-          padding: '12px 20px',
-          fontSize: 12,
-          minWidth: 250,
-          zIndex: 10,
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 60,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'var(--bg)',
+            border: '2px solid var(--accent)',
+            borderRadius: 4,
+            padding: '12px 20px',
+            fontSize: 12,
+            minWidth: 250,
+            zIndex: 10,
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
             <strong style={{ color: 'var(--accent)' }}>
               {selectedHotspot.discovered ? selectedHotspot.name : '??? Unknown Zone'}
             </strong>
             <button
               onClick={() => setSelectedHotspot(null)}
-              style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', fontFamily: 'var(--font)' }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-dim)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font)',
+              }}
             >
               X
             </button>
@@ -2334,9 +2701,21 @@ export default function App() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <MapView hotspots={game.hotspots} onDiscoverZone={handleDiscoverZone} />
         <Sidebar
-          chatTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Chat coming soon...</div>}
-          guideTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Field guide coming soon...</div>}
-          badgesTab={<div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>Badges coming soon...</div>}
+          chatTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Chat coming soon...
+            </div>
+          }
+          guideTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Field guide coming soon...
+            </div>
+          }
+          badgesTab={
+            <div style={{ padding: 12, color: 'var(--text-dim)', fontSize: 11 }}>
+              Badges coming soon...
+            </div>
+          }
         />
       </div>
       <ToastContainer toasts={game.toasts} />
@@ -2362,6 +2741,7 @@ git commit -m "feat: MapLibre GL map with tree markers and hotspot zones"
 ## Task 9: Chat Tab (Ollama Integration)
 
 **Files:**
+
 - Create: `src/renderer/components/ChatTab.tsx`
 - Create: `src/renderer/hooks/useOllama.ts`
 - Modify: `src/renderer/App.tsx` — plug in ChatTab
@@ -2378,24 +2758,33 @@ export function useOllama() {
   const [messages, setMessages] = useState<OllamaMessage[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = useCallback(async (text: string) => {
-    const userMsg: OllamaMessage = { role: 'user', content: text };
-    setMessages((prev) => [...prev, userMsg]);
-    setLoading(true);
+  const sendMessage = useCallback(
+    async (text: string) => {
+      const userMsg: OllamaMessage = { role: 'user', content: text };
+      setMessages((prev) => [...prev, userMsg]);
+      setLoading(true);
 
-    try {
-      const result = await window.api.ollamaChat([...messages, userMsg]);
-      if (result.ok && result.response) {
-        setMessages((prev) => [...prev, { role: 'assistant', content: result.response! }]);
-      } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: `ERROR: ${result.error || 'Scout is offline'}` }]);
+      try {
+        const result = await window.api.ollamaChat([...messages, userMsg]);
+        if (result.ok && result.response) {
+          setMessages((prev) => [...prev, { role: 'assistant', content: result.response! }]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: `ERROR: ${result.error || 'Scout is offline'}` },
+          ]);
+        }
+      } catch (err) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: 'ERROR: Could not reach Squirrel Scout' },
+        ]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'ERROR: Could not reach Squirrel Scout' }]);
-    } finally {
-      setLoading(false);
-    }
-  }, [messages]);
+    },
+    [messages],
+  );
 
   const clearChat = useCallback(() => setMessages([]), []);
 
@@ -2436,7 +2825,9 @@ export default function ChatTab({ ollamaOnline }: Props) {
         {messages.length === 0 && (
           <div style={{ color: 'var(--text-dim)', padding: '20px 0', textAlign: 'center' }}>
             <div style={{ fontSize: 24, marginBottom: 8 }}>&#x1F43F;&#xFE0F;</div>
-            <div style={{ color: 'var(--gold)', fontWeight: 'bold', marginBottom: 4 }}>SQUIRREL SCOUT</div>
+            <div style={{ color: 'var(--gold)', fontWeight: 'bold', marginBottom: 4 }}>
+              SQUIRREL SCOUT
+            </div>
             <div>Ask me where to find squirrels!</div>
             {!ollamaOnline && (
               <div style={{ color: '#ff4444', marginTop: 8 }}>
@@ -2447,7 +2838,12 @@ export default function ChatTab({ ollamaOnline }: Props) {
         )}
         {messages.map((msg, i) => (
           <div key={i} style={{ marginBottom: 10 }}>
-            <span style={{ color: msg.role === 'user' ? 'var(--accent)' : 'var(--gold)', fontWeight: 'bold' }}>
+            <span
+              style={{
+                color: msg.role === 'user' ? 'var(--accent)' : 'var(--gold)',
+                fontWeight: 'bold',
+              }}
+            >
               {msg.role === 'user' ? 'YOU: ' : '\u{1F43F}\uFE0F SCOUT: '}
             </span>
             <span style={{ color: msg.content.startsWith('ERROR:') ? '#ff4444' : 'var(--text)' }}>
@@ -2532,6 +2928,7 @@ git commit -m "feat: Ollama chat tab — Squirrel Scout AI assistant"
 ## Task 10: Field Guide Tab (Pokédex)
 
 **Files:**
+
 - Create: `src/renderer/components/FieldGuideTab.tsx`
 - Modify: `src/renderer/App.tsx` — plug in FieldGuideTab
 
@@ -2550,7 +2947,15 @@ interface Props {
 export default function FieldGuideTab({ hotspots, onSelectHotspot }: Props) {
   return (
     <div style={{ padding: 8 }}>
-      <div style={{ color: 'var(--gold)', fontWeight: 'bold', fontSize: 12, marginBottom: 8, letterSpacing: 1 }}>
+      <div
+        style={{
+          color: 'var(--gold)',
+          fontWeight: 'bold',
+          fontSize: 12,
+          marginBottom: 8,
+          letterSpacing: 1,
+        }}
+      >
         FIELD GUIDE — {hotspots.filter((h) => h.discovered).length}/{hotspots.length} DISCOVERED
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
@@ -2568,27 +2973,28 @@ export default function FieldGuideTab({ hotspots, onSelectHotspot }: Props) {
               fontFamily: 'var(--font)',
             }}
           >
-            <div style={{
-              fontSize: 10,
-              color: h.discovered ? 'var(--gold)' : 'var(--text-dim)',
-              fontWeight: 'bold',
-              marginBottom: 4,
-            }}>
+            <div
+              style={{
+                fontSize: 10,
+                color: h.discovered ? 'var(--gold)' : 'var(--text-dim)',
+                fontWeight: 'bold',
+                marginBottom: 4,
+              }}
+            >
               #{String(i + 1).padStart(2, '0')}
             </div>
-            <div style={{
-              fontSize: 11,
-              color: h.discovered ? 'var(--text)' : 'var(--text-dim)',
-              fontWeight: 'bold',
-              marginBottom: 4,
-            }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: h.discovered ? 'var(--text)' : 'var(--text-dim)',
+                fontWeight: 'bold',
+                marginBottom: 4,
+              }}
+            >
               {h.discovered ? h.name : '???'}
             </div>
             <div style={{ fontSize: 10, color: 'var(--gold)' }}>
-              {h.discovered
-                ? '🌰'.repeat(h.squirrel_score)
-                : '⬛'.repeat(5)
-              }
+              {h.discovered ? '🌰'.repeat(h.squirrel_score) : '⬛'.repeat(5)}
             </div>
             {h.discovered && (
               <div style={{ fontSize: 9, color: 'var(--text-dim)', marginTop: 4 }}>
@@ -2629,6 +3035,7 @@ git commit -m "feat: Pokédex-style field guide tab"
 ## Task 11: Badges Tab
 
 **Files:**
+
 - Create: `src/renderer/components/BadgesTab.tsx`
 - Modify: `src/renderer/App.tsx` — plug in BadgesTab
 
@@ -2647,7 +3054,15 @@ export default function BadgesTab({ badges }: Props) {
   const earned = badges.filter((b) => b.earned).length;
   return (
     <div style={{ padding: 8 }}>
-      <div style={{ color: 'var(--gold)', fontWeight: 'bold', fontSize: 12, marginBottom: 8, letterSpacing: 1 }}>
+      <div
+        style={{
+          color: 'var(--gold)',
+          fontWeight: 'bold',
+          fontSize: 12,
+          marginBottom: 8,
+          letterSpacing: 1,
+        }}
+      >
         BADGES — {earned}/{badges.length}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
@@ -2664,15 +3079,15 @@ export default function BadgesTab({ badges }: Props) {
               opacity: badge.earned ? 1 : 0.4,
             }}
           >
-            <div style={{ fontSize: 20, marginBottom: 4 }}>
-              {badge.earned ? badge.icon : '?'}
-            </div>
-            <div style={{
-              fontSize: 8,
-              color: badge.earned ? 'var(--text)' : 'var(--text-dim)',
-              fontWeight: 'bold',
-              lineHeight: 1.2,
-            }}>
+            <div style={{ fontSize: 20, marginBottom: 4 }}>{badge.earned ? badge.icon : '?'}</div>
+            <div
+              style={{
+                fontSize: 8,
+                color: badge.earned ? 'var(--text)' : 'var(--text-dim)',
+                fontWeight: 'bold',
+                lineHeight: 1.2,
+              }}
+            >
               {badge.earned ? badge.name : '???'}
             </div>
           </div>
@@ -2709,6 +3124,7 @@ git commit -m "feat: badge grid tab with earned/locked states"
 ## Task 12: Quest Overlay
 
 **Files:**
+
 - Create: `src/renderer/components/QuestOverlay.tsx`
 - Modify: `src/renderer/App.tsx` — integrate quest overlay
 
@@ -2730,18 +3146,20 @@ export default function QuestOverlay({ quests, onGenerateQuest, loading }: Props
   const activeQuest = quests.find((q) => q.status === 'active');
 
   return (
-    <div style={{
-      position: 'absolute',
-      bottom: 12,
-      left: 12,
-      background: 'rgba(26, 26, 46, 0.92)',
-      border: '1px solid var(--accent)',
-      borderRadius: 4,
-      padding: '8px 14px',
-      fontSize: 11,
-      maxWidth: 350,
-      zIndex: 5,
-    }}>
+    <div
+      style={{
+        position: 'absolute',
+        bottom: 12,
+        left: 12,
+        background: 'rgba(26, 26, 46, 0.92)',
+        border: '1px solid var(--accent)',
+        borderRadius: 4,
+        padding: '8px 14px',
+        fontSize: 11,
+        maxWidth: 350,
+        zIndex: 5,
+      }}
+    >
       {activeQuest ? (
         <div>
           <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>&#x1F3AF; QUEST: </span>
@@ -2813,6 +3231,7 @@ git commit -m "feat: quest overlay with AI-generated missions"
 ## Task 13: Sighting Log Modal
 
 **Files:**
+
 - Create: `src/renderer/components/SightingModal.tsx`
 - Modify: `src/renderer/App.tsx` — add sighting trigger
 
@@ -2826,7 +3245,13 @@ import type { Hotspot } from '@shared/types';
 
 interface Props {
   hotspots: Hotspot[];
-  onSubmit: (sighting: { hotspot_id: number | null; lat: number; lon: number; photo_path: string | null; notes: string }) => void;
+  onSubmit: (sighting: {
+    hotspot_id: number | null;
+    lat: number;
+    lon: number;
+    photo_path: string | null;
+    notes: string;
+  }) => void;
   onClose: () => void;
 }
 
@@ -2848,29 +3273,35 @@ export default function SightingModal({ hotspots, onSubmit, onClose }: Props) {
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.7)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-    }}>
-      <div style={{
-        background: 'var(--bg)',
-        border: '2px solid var(--accent)',
-        borderRadius: 4,
-        padding: 24,
-        width: 360,
-        fontFamily: 'var(--font)',
-      }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.7)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 100,
+      }}
+    >
+      <div
+        style={{
+          background: 'var(--bg)',
+          border: '2px solid var(--accent)',
+          borderRadius: 4,
+          padding: 24,
+          width: 360,
+          fontFamily: 'var(--font)',
+        }}
+      >
         <h3 style={{ color: 'var(--accent)', marginBottom: 16, letterSpacing: 2, fontSize: 14 }}>
           LOG SQUIRREL SIGHTING
         </h3>
 
         <label style={{ display: 'block', marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: 'var(--gold)', marginBottom: 4, fontWeight: 'bold' }}>LOCATION</div>
+          <div style={{ fontSize: 10, color: 'var(--gold)', marginBottom: 4, fontWeight: 'bold' }}>
+            LOCATION
+          </div>
           <select
             value={selectedHotspot ?? ''}
             onChange={(e) => setSelectedHotspot(e.target.value ? Number(e.target.value) : null)}
@@ -2886,13 +3317,17 @@ export default function SightingModal({ hotspots, onSubmit, onClose }: Props) {
           >
             <option value="">Select a zone...</option>
             {discovered.map((h) => (
-              <option key={h.id} value={h.id}>{h.name}</option>
+              <option key={h.id} value={h.id}>
+                {h.name}
+              </option>
             ))}
           </select>
         </label>
 
         <label style={{ display: 'block', marginBottom: 16 }}>
-          <div style={{ fontSize: 10, color: 'var(--gold)', marginBottom: 4, fontWeight: 'bold' }}>NOTES</div>
+          <div style={{ fontSize: 10, color: 'var(--gold)', marginBottom: 4, fontWeight: 'bold' }}>
+            NOTES
+          </div>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -2973,7 +3408,9 @@ async function handleLogSighting(sighting: any) {
 Add a floating "LOG SIGHTING" button in the map area and the modal:
 
 ```tsx
-{/* Floating sighting button */}
+{
+  /* Floating sighting button */
+}
 <button
   onClick={() => setShowSightingModal(true)}
   style={{
@@ -2993,15 +3430,17 @@ Add a floating "LOG SIGHTING" button in the map area and the modal:
   }}
 >
   &#x1F43F;&#xFE0F; LOG SIGHTING
-</button>
+</button>;
 
-{showSightingModal && (
-  <SightingModal
-    hotspots={game.hotspots}
-    onSubmit={handleLogSighting}
-    onClose={() => setShowSightingModal(false)}
-  />
-)}
+{
+  showSightingModal && (
+    <SightingModal
+      hotspots={game.hotspots}
+      onSubmit={handleLogSighting}
+      onClose={() => setShowSightingModal(false)}
+    />
+  );
+}
 ```
 
 - [ ] **Step 3: Commit**
@@ -3016,6 +3455,7 @@ git commit -m "feat: sighting log modal with zone selection"
 ## Task 14: Final App.tsx Integration + Polish
 
 **Files:**
+
 - Modify: `src/renderer/App.tsx` — final wiring with all components
 - Modify: `src/renderer/global.css` — any final style tweaks
 
@@ -3064,7 +3504,11 @@ export default function App() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <MapView hotspots={game.hotspots} onDiscoverZone={handleDiscoverZone} />
-          <QuestOverlay quests={game.quests} onGenerateQuest={handleGenerateQuest} loading={questLoading} />
+          <QuestOverlay
+            quests={game.quests}
+            onGenerateQuest={handleGenerateQuest}
+            loading={questLoading}
+          />
           <button
             onClick={() => setShowSightingModal(true)}
             style={{
@@ -3113,6 +3557,7 @@ Expected: All tests pass.
 - [ ] **Step 3: Build and run in Electron**
 
 Run:
+
 ```bash
 npm run build:db
 npm run build
@@ -3134,6 +3579,7 @@ git commit -m "feat: fully integrated UNT Fluffy Squirrel Safari app"
 ## Task 15: Electron Packaging
 
 **Files:**
+
 - Modify: `package.json` — verify package script
 - Create: `resources/icon.png` (placeholder)
 
@@ -3151,6 +3597,7 @@ For now the app will use the default Electron icon.
 - [ ] **Step 2: Build the distributable**
 
 Run:
+
 ```bash
 npm run package
 ```

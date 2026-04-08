@@ -7,36 +7,38 @@ interface ToastContainerProps {
 }
 
 const TOAST_ICONS: Record<ToastType['type'], string> = {
-  'score': '⭐',
+  score: '⭐',
   'level-up': '🎯',
-  'badge': '🏆',
-  'discovery': '🗺️',
+  badge: '🏆',
+  discovery: '🗺️',
 };
 
 const TOAST_CLASS: Record<ToastType['type'], string> = {
-  'score': 'toast',
+  score: 'toast',
   'level-up': 'toast level-up',
-  'badge': 'toast badge',
-  'discovery': 'toast discovery',
+  badge: 'toast badge',
+  discovery: 'toast discovery',
 };
 
 export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   if (toasts.length === 0) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: '60px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 200,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-      alignItems: 'center',
-      pointerEvents: 'none',
-    }}>
-      {toasts.map(toast => (
+    <div
+      style={{
+        position: 'fixed',
+        top: '60px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 200,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        alignItems: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      {toasts.map((toast) => (
         <div
           key={toast.id}
           className={TOAST_CLASS[toast.type]}

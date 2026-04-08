@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "PreCommit": [
+      {
+        "command": "bash scripts/gates/run-gate.sh --gate lint",
+        "description": "Run lint gate before commit"
+      }
+    ]
+  }
+}

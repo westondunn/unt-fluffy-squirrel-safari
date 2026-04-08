@@ -11,7 +11,17 @@ import { ToastContainer } from './components/Toast';
 import { api } from './lib/api';
 
 export default function App() {
-  const { player, badges, hotspots, quests, ollamaOnline, toasts, refresh, processEvents, removeToast } = useGameState();
+  const {
+    player,
+    badges,
+    hotspots,
+    quests,
+    ollamaOnline,
+    toasts,
+    refresh,
+    processEvents,
+    removeToast,
+  } = useGameState();
   const { messages: chatMessages, loading: chatLoading, sendMessage, clearChat } = useOllama();
   const [sightingModalOpen, setSightingModalOpen] = useState(false);
   const mapRef = useRef<MapViewHandle>(null);
@@ -35,7 +45,7 @@ export default function App() {
       const events = await api.logSighting({
         tree_id: null,
         hotspot_id: hotspotId,
-        lat: 33.2100,
+        lat: 33.21,
         lon: -97.1525,
         photo_path: null,
         notes,

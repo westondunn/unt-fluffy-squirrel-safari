@@ -13,8 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality-gates:
+    name: Quality Gates
+    uses: ./.github/workflows/quality-gate.yml
+    with:
+      gates: all
+      continue_on_failure: true
+
   validate:
     name: Validate (${{ matrix.os }}, Node ${{ matrix.node }})
+    needs: quality-gates
     runs-on: ${{ matrix.os }}
     timeout-minutes: 35
     strategy:

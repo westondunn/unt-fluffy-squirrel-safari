@@ -31,7 +31,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  quality-gates:
+    name: Quality Gates
+    uses: ./.github/workflows/quality-gate.yml
+    with:
+      gates: all
+
   bump-and-tag:
+    needs: quality-gates
     name: Bump, Commit, Tag, Push
     runs-on: ubuntu-latest
     timeout-minutes: 15

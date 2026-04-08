@@ -18,6 +18,7 @@ When you first launch the app, you'll see:
 Click any **pink circle** on the map — these are undiscovered squirrel hotspot zones. A popup will appear with a big **"I'M HERE — DISCOVER ZONE"** button. Click it to claim your first discovery!
 
 You'll earn:
+
 - +100 points
 - The "First Steps" badge
 - The zone revealed in your Field Guide
@@ -27,6 +28,7 @@ You'll earn:
 ## Understanding the Map
 
 ### Tree Dots
+
 Every dot on the map is a real tree from the UNT campus inventory.
 
 - **Red dots** = Nut-producing trees (oaks, pecans, hackberries, cedar elms, sweetgums, mesquite). These are squirrel magnets — squirrels love nuts!
@@ -34,13 +36,16 @@ Every dot on the map is a real tree from the UNT campus inventory.
 - **Gold stars** = Memorial or dedicated trees
 
 ### Hotspot Circles
+
 These mark clusters of nut-producing trees where squirrels are most likely to hang out.
 
 - **Pink circles** = Undiscovered zones (labeled "???")
 - **Gold circles** = Zones you've already discovered
 
 ### Clicking Trees
+
 Click on any individual tree dot to see its details:
+
 - Species name
 - Whether it's a nut tree (squirrel food!)
 - Elevation
@@ -52,6 +57,7 @@ Click on any individual tree dot to see its details:
 ## The Sidebar
 
 ### Chat Tab
+
 Talk to the **Squirrel Scout** — an AI assistant that knows every tree on campus! Try asking:
 
 - "Where are squirrels near the library?"
@@ -62,6 +68,7 @@ Talk to the **Squirrel Scout** — an AI assistant that knows every tree on camp
 **Note:** Requires Ollama running locally. The green dot next to "SCOUT" in the top bar shows connection status.
 
 ### Guide Tab
+
 Your **Pokédex-style Field Guide** showing all 16 discovery zones:
 
 - **Locked entries** show "??? UNKNOWN ZONE" with a lock icon
@@ -69,6 +76,7 @@ Your **Pokédex-style Field Guide** showing all 16 discovery zones:
 - **Click any entry** to fly the map to that location
 
 ### Badges Tab
+
 View your **24 achievement badges** in a grid:
 
 - **Lit up badges** = earned (with icon and name visible)
@@ -78,14 +86,15 @@ View your **24 achievement badges** in a grid:
 
 ## Scoring
 
-| Action | Points |
-|--------|--------|
-| Discover a zone | +100 |
-| Log a sighting | +50 |
-| Earn a badge | +200 |
-| Complete a quest | +300 |
+| Action           | Points |
+| ---------------- | ------ |
+| Discover a zone  | +100   |
+| Log a sighting   | +50    |
+| Earn a badge     | +200   |
+| Complete a quest | +300   |
 
 ### Levels
+
 You level up every **500 points**. Your level shows as "WORLD" in the HUD — just like Super Mario Bros 3!
 
 ---
@@ -116,27 +125,31 @@ Quests guide you to unexplored parts of campus and challenge you to find specifi
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `+` / `-` | Zoom in/out on the map |
-| Click + drag | Pan the map |
-| Scroll wheel | Zoom in/out |
+| Key          | Action                 |
+| ------------ | ---------------------- |
+| `+` / `-`    | Zoom in/out on the map |
+| Click + drag | Pan the map            |
+| Scroll wheel | Zoom in/out            |
 
 ---
 
 ## Troubleshooting
 
 ### "SCOUT OFFLINE" in the top bar
+
 The AI chat requires Ollama. Install it from [ollama.ai](https://ollama.ai), then run:
+
 ```
 ollama serve
 ollama pull llama3.2
 ```
 
 ### Map tiles not loading
+
 The app needs an internet connection for map tiles (CartoDB Voyager). Check your connection.
 
 ### Score not updating
+
 Try clicking a different tab and back, or close and reopen the app. Game state saves to disk automatically.
 
 ---
@@ -144,6 +157,7 @@ Try clicking a different tab and back, or close and reopen the app. Game state s
 ## About the Data
 
 This app uses the official **UNT Campus Tree Inventory** containing 5,018 surveyed trees with:
+
 - GPS coordinates (converted from NAD 1983 State Plane Texas)
 - Species identification (60+ species including Live Oak, Post Oak, Pecan, Hackberry, and more)
 - Elevation data
@@ -153,4 +167,4 @@ The 16 squirrel hotspot zones are computed algorithmically by clustering nut-pro
 
 ---
 
-*Happy squirrel hunting, Mean Green!* 🐿️
+_Happy squirrel hunting, Mean Green!_ 🐿️

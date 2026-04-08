@@ -1,19 +1,45 @@
-import React, { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import maplibregl from 'maplibre-gl';
 import type { Hotspot } from '@shared/types';
 import { api } from '../lib/api';
 
-const UNT_LAT = 33.2100;
+const UNT_LAT = 33.21;
 const UNT_LON = -97.1525;
 
 const NUT_SPECIES = new Set([
-  'Live Oak', 'Post Oak', 'Red Oak', 'Bur Oak', 'Oak',
-  'Pecan', 'Hackberry', 'Cedar Elm', 'Sweetgum', 'Mesquite',
+  'Live Oak',
+  'Post Oak',
+  'Red Oak',
+  'Bur Oak',
+  'Oak',
+  'Pecan',
+  'Hackberry',
+  'Cedar Elm',
+  'Sweetgum',
+  'Mesquite',
 ]);
 
 type PopupInfo =
   | { kind: 'hotspot'; hotspot: Hotspot }
-  | { kind: 'tree'; tree: { id: number; species: string; elevation: number; memorial: string; isNut: boolean; lat: number; lon: number } };
+  | {
+      kind: 'tree';
+      tree: {
+        id: number;
+        species: string;
+        elevation: number;
+        memorial: string;
+        isNut: boolean;
+        lat: number;
+        lon: number;
+      };
+    };
 
 export interface MapViewHandle {
   flyTo: (lat: number, lon: number, zoom?: number) => void;
@@ -24,7 +50,10 @@ interface MapViewProps {
   onDiscoverZone: (hotspotId: number) => void;
 }
 
-export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView({ hotspots, onDiscoverZone }, ref) {
+export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
+  { hotspots, onDiscoverZone },
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const hotspotsRef = useRef<Hotspot[]>(hotspots);
@@ -53,7 +82,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
 
       const geojson: GeoJSON.FeatureCollection = {
         type: 'FeatureCollection',
-        features: trees.map(tree => ({
+        features: trees.map((tree) => ({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [tree.lon, tree.lat] },
           properties: {
@@ -82,7 +111,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
 
     const geojson: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
-      features: spots.map(h => ({
+      features: spots.map((h) => ({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [h.lon, h.lat] },
         properties: {
@@ -115,11 +144,13 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
             attribution: '© OpenStreetMap contributors © CARTO',
           },
         },
-        layers: [{
-          id: 'osm',
-          type: 'raster',
-          source: 'osm',
-        }],
+        layers: [
+          {
+            id: 'osm',
+            type: 'raster',
+            source: 'osm',
+          },
+        ],
       },
       center: [UNT_LON, UNT_LAT],
       zoom: 15,
@@ -142,15 +173,15 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
         source: 'trees',
         paint: {
           'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 2, 16, 5, 18, 8],
-          'circle-color': [
-            'case',
-            ['get', 'isNut'],
-            '#E40058',
-            '#00A800',
-          ],
+          'circle-color': ['case', ['get', 'isNut'], '#E40058', '#00A800'],
           'circle-opacity': 0.8,
           'circle-stroke-width': ['case', ['==', ['get', 'memorial'], 'Y'], 3, 1],
-          'circle-stroke-color': ['case', ['==', ['get', 'memorial'], 'Y'], '#F8D830', 'rgba(0,0,0,0.3)'],
+          'circle-stroke-color': [
+            'case',
+            ['==', ['get', 'memorial'], 'Y'],
+            '#F8D830',
+            'rgba(0,0,0,0.3)',
+          ],
         },
       });
 
@@ -179,25 +210,11 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
         type: 'circle',
         source: 'hotspots',
         paint: {
-          'circle-radius': [
-            'interpolate', ['linear'], ['zoom'],
-            13, 20,
-            16, 40,
-          ],
-          'circle-color': [
-            'case',
-            ['get', 'discovered'],
-            '#F8D830',
-            '#E40058',
-          ],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 20, 16, 40],
+          'circle-color': ['case', ['get', 'discovered'], '#F8D830', '#E40058'],
           'circle-opacity': 0.35,
           'circle-stroke-width': 3,
-          'circle-stroke-color': [
-            'case',
-            ['get', 'discovered'],
-            '#A87820',
-            '#A80040',
-          ],
+          'circle-stroke-color': ['case', ['get', 'discovered'], '#A87820', '#A80040'],
           'circle-stroke-opacity': 0.8,
         },
       });
@@ -230,7 +247,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     map.on('moveend', () => loadTrees(map));
 
     // ── Click on hotspot ────────────────────────────────
-    map.on('click', 'hotspots-circle', e => {
+    map.on('click', 'hotspots-circle', (e) => {
       if (!e.features || e.features.length === 0) return;
       e.originalEvent.stopPropagation();
       const feature = e.features[0];
@@ -254,7 +271,7 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     });
 
     // ── Click on tree ───────────────────────────────────
-    map.on('click', 'trees-layer', e => {
+    map.on('click', 'trees-layer', (e) => {
       if (!e.features || e.features.length === 0) return;
       // Don't fire if hotspot was also clicked
       const hotspotFeatures = map.queryRenderedFeatures(e.point, { layers: ['hotspots-circle'] });
@@ -279,23 +296,30 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     });
 
     // Click empty area to close popup
-    map.on('click', e => {
+    map.on('click', (e) => {
       const hotspotHits = map.queryRenderedFeatures(e.point, { layers: ['hotspots-circle'] });
       const treeHits = map.queryRenderedFeatures(e.point, { layers: ['trees-layer'] });
       if (hotspotHits.length === 0 && treeHits.length === 0) setPopup(null);
     });
 
     // Cursor changes
-    map.on('mouseenter', 'hotspots-circle', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'hotspots-circle', () => { map.getCanvas().style.cursor = ''; });
-    map.on('mouseenter', 'trees-layer', () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', 'trees-layer', () => { map.getCanvas().style.cursor = ''; });
+    map.on('mouseenter', 'hotspots-circle', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'hotspots-circle', () => {
+      map.getCanvas().style.cursor = '';
+    });
+    map.on('mouseenter', 'trees-layer', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'trees-layer', () => {
+      map.getCanvas().style.cursor = '';
+    });
 
     return () => {
       map.remove();
       mapRef.current = null;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update hotspots when prop changes
@@ -317,30 +341,47 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
 
       {/* ── Hotspot popup ── */}
       {popup?.kind === 'hotspot' && (
-        <div style={{
-          position: 'absolute',
-          bottom: '80px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: '#F8B800',
-          border: '4px solid #A87820',
-          borderRadius: '2px',
-          padding: '14px 18px',
-          minWidth: '240px',
-          maxWidth: '300px',
-          zIndex: 10,
-          boxShadow: '4px 4px 0px #A87820, inset 2px 2px 0px rgba(255,255,255,0.3)',
-        }}>
-          <button onClick={() => setPopup(null)} style={closeBtn}>✕</button>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#F8B800',
+            border: '4px solid #A87820',
+            borderRadius: '2px',
+            padding: '14px 18px',
+            minWidth: '240px',
+            maxWidth: '300px',
+            zIndex: 10,
+            boxShadow: '4px 4px 0px #A87820, inset 2px 2px 0px rgba(255,255,255,0.3)',
+          }}
+        >
+          <button onClick={() => setPopup(null)} style={closeBtn}>
+            ✕
+          </button>
 
           <div style={{ ...labelStyle, fontSize: '13px', color: '#38180C', marginBottom: '8px' }}>
             {popup.hotspot.discovered ? popup.hotspot.name : '??? UNKNOWN ZONE'}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
-            <Row label="SCORE" value={popup.hotspot.discovered ? `${'🌰'.repeat(popup.hotspot.score || 0)}` : '?????'} />
-            <Row label="TREES" value={popup.hotspot.discovered ? String(popup.hotspot.tree_count) : '?'} />
-            <Row label="NUT TREES" value={popup.hotspot.discovered ? String(popup.hotspot.nut_count) : '?'} />
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}
+          >
+            <Row
+              label="SCORE"
+              value={
+                popup.hotspot.discovered ? `${'🌰'.repeat(popup.hotspot.score || 0)}` : '?????'
+              }
+            />
+            <Row
+              label="TREES"
+              value={popup.hotspot.discovered ? String(popup.hotspot.tree_count) : '?'}
+            />
+            <Row
+              label="NUT TREES"
+              value={popup.hotspot.discovered ? String(popup.hotspot.nut_count) : '?'}
+            />
           </div>
 
           {!popup.hotspot.discovered && (
@@ -358,21 +399,25 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
 
       {/* ── Tree popup ── */}
       {popup?.kind === 'tree' && (
-        <div style={{
-          position: 'absolute',
-          bottom: '80px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: popup.tree.isNut ? '#F8B800' : '#88E888',
-          border: `4px solid ${popup.tree.isNut ? '#A87820' : '#005800'}`,
-          borderRadius: '2px',
-          padding: '14px 18px',
-          minWidth: '220px',
-          maxWidth: '280px',
-          zIndex: 10,
-          boxShadow: `4px 4px 0px ${popup.tree.isNut ? '#A87820' : '#005800'}, inset 2px 2px 0px rgba(255,255,255,0.3)`,
-        }}>
-          <button onClick={() => setPopup(null)} style={closeBtn}>✕</button>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: popup.tree.isNut ? '#F8B800' : '#88E888',
+            border: `4px solid ${popup.tree.isNut ? '#A87820' : '#005800'}`,
+            borderRadius: '2px',
+            padding: '14px 18px',
+            minWidth: '220px',
+            maxWidth: '280px',
+            zIndex: 10,
+            boxShadow: `4px 4px 0px ${popup.tree.isNut ? '#A87820' : '#005800'}, inset 2px 2px 0px rgba(255,255,255,0.3)`,
+          }}
+        >
+          <button onClick={() => setPopup(null)} style={closeBtn}>
+            ✕
+          </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <span style={{ fontSize: '24px' }}>{popup.tree.isNut ? '🌰' : '🌳'}</span>
@@ -387,10 +432,19 @@ export const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <Row label="TYPE" value={popup.tree.isNut ? '🐿️ NUT TREE — SQUIRREL FOOD!' : '🌿 NON-NUT TREE'} />
-            <Row label="ELEVATION" value={popup.tree.elevation > 0 ? `${popup.tree.elevation.toFixed(0)} ft` : 'N/A'} />
+            <Row
+              label="TYPE"
+              value={popup.tree.isNut ? '🐿️ NUT TREE — SQUIRREL FOOD!' : '🌿 NON-NUT TREE'}
+            />
+            <Row
+              label="ELEVATION"
+              value={popup.tree.elevation > 0 ? `${popup.tree.elevation.toFixed(0)} ft` : 'N/A'}
+            />
             <Row label="MEMORIAL" value={popup.tree.memorial === 'Y' ? '⭐ YES' : 'No'} />
-            <Row label="COORDS" value={`${popup.tree.lat.toFixed(4)}, ${popup.tree.lon.toFixed(4)}`} />
+            <Row
+              label="COORDS"
+              value={`${popup.tree.lat.toFixed(4)}, ${popup.tree.lon.toFixed(4)}`}
+            />
           </div>
         </div>
       )}
@@ -435,10 +489,25 @@ const discoverBtn: React.CSSProperties = {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '10px', color: '#666', letterSpacing: '1px', fontWeight: 'bold' }}>
+      <span
+        style={{
+          fontFamily: '"Courier New", monospace',
+          fontSize: '10px',
+          color: '#666',
+          letterSpacing: '1px',
+          fontWeight: 'bold',
+        }}
+      >
         {label}
       </span>
-      <span style={{ fontFamily: '"Courier New", monospace', fontSize: '11px', color: '#38180C', fontWeight: 'bold' }}>
+      <span
+        style={{
+          fontFamily: '"Courier New", monospace',
+          fontSize: '11px',
+          color: '#38180C',
+          fontWeight: 'bold',
+        }}
+      >
         {value}
       </span>
     </div>

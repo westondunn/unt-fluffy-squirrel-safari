@@ -55,30 +55,43 @@ export function useGameState(): GameState {
 
   const addToast = useCallback((text: string, type: Toast['type']) => {
     const id = ++toastCounter;
-    setToasts(prev => [...prev, { id, text, type }]);
+    setToasts((prev) => [...prev, { id, text, type }]);
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);
   }, []);
 
   const removeToast = useCallback((id: number) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const processEvents = useCallback(async (events: GameEvent[]) => {
-    for (const event of events) {
-      if (event.type === 'level_up') {
-        addToast(`LEVEL UP! NOW LEVEL ${event.payload.level}`, 'level-up');
-      } else if (event.type === 'badge_earned') {
-        addToast(`BADGE EARNED: ${event.payload.badgeName}`, 'badge');
-      } else if (event.type === 'zone_discovered') {
-        addToast(`ZONE DISCOVERED: ${event.payload.hotspotName}`, 'discovery');
-      } else if (event.type === 'score') {
-        addToast(`+${event.payload.points} PTS`, 'score');
+  const processEvents = useCallback(
+    async (events: GameEvent[]) => {
+      for (const event of events) {
+        if (event.type === 'level_up') {
+          addToast(`LEVEL UP! NOW LEVEL ${event.payload.level}`, 'level-up');
+        } else if (event.type === 'badge_earned') {
+          addToast(`BADGE EARNED: ${event.payload.badgeName}`, 'badge');
+        } else if (event.type === 'zone_discovered') {
+          addToast(`ZONE DISCOVERED: ${event.payload.hotspotName}`, 'discovery');
+        } else if (event.type === 'score') {
+          addToast(`+${event.payload.points} PTS`, 'score');
+        }
       }
-    }
-    await refresh();
-  }, [addToast, refresh]);
+      await refresh();
+    },
+    [addToast, refresh],
+  );
 
-  return { player, badges, hotspots, quests, ollamaOnline, toasts, refresh, processEvents, removeToast };
+  return {
+    player,
+    badges,
+    hotspots,
+    quests,
+    ollamaOnline,
+    toasts,
+    refresh,
+    processEvents,
+    removeToast,
+  };
 }

@@ -9,6 +9,12 @@ export default defineConfig({
     root: path.resolve(__dirname),
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
     environment: 'node',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/renderer/main.tsx'],
+    },
   },
   base: './',
   build: {

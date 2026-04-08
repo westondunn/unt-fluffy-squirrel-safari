@@ -87,7 +87,11 @@ describe('haversineMeters', () => {
 // ─── clusterTrees ─────────────────────────────────────────────────────────────
 describe('clusterTrees', () => {
   // Helper: make a minimal TreeRow
-  function makeTree(lat: number, lon: number, name_comn = 'Live Oak'): Parameters<typeof clusterTrees>[0][0] {
+  function makeTree(
+    lat: number,
+    lon: number,
+    name_comn = 'Live Oak',
+  ): Parameters<typeof clusterTrees>[0][0] {
     return {
       fid: Math.floor(Math.random() * 10000),
       northing: 0,
@@ -111,10 +115,7 @@ describe('clusterTrees', () => {
   });
 
   it('skips clusters with fewer than 3 nut trees', () => {
-    const trees = [
-      makeTree(33.21, -97.15),
-      makeTree(33.2100001, -97.15),
-    ];
+    const trees = [makeTree(33.21, -97.15), makeTree(33.2100001, -97.15)];
     const result = clusterTrees(trees);
     expect(result).toHaveLength(0);
   });
@@ -122,11 +123,11 @@ describe('clusterTrees', () => {
   it('groups nearby nut trees within 50m into a cluster', () => {
     // Place 5 trees very close together (~0m apart)
     const trees = [
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
+      makeTree(33.21, -97.15),
+      makeTree(33.21, -97.15),
+      makeTree(33.21, -97.15),
+      makeTree(33.21, -97.15),
+      makeTree(33.21, -97.15),
     ];
     const result = clusterTrees(trees);
     expect(result).toHaveLength(1);
@@ -135,15 +136,11 @@ describe('clusterTrees', () => {
 
   it('does not group trees that are more than 50m apart into the same cluster', () => {
     // Two groups 500m apart (roughly 0.005 degrees latitude apart at 33° lat)
-    const group1 = [
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
-      makeTree(33.2100, -97.1500),
-    ];
+    const group1 = [makeTree(33.21, -97.15), makeTree(33.21, -97.15), makeTree(33.21, -97.15)];
     const group2 = [
-      makeTree(33.2150, -97.1500), // ~555m north
-      makeTree(33.2150, -97.1500),
-      makeTree(33.2150, -97.1500),
+      makeTree(33.215, -97.15), // ~555m north
+      makeTree(33.215, -97.15),
+      makeTree(33.215, -97.15),
     ];
     const result = clusterTrees([...group1, ...group2]);
     expect(result).toHaveLength(2);
@@ -165,7 +162,6 @@ describe('clusterTrees', () => {
     const largeCluster = Array.from({ length: 20 }, () => makeTree(33.22, -97.16, 'Live Oak'));
     const result = clusterTrees([...smallCluster, ...largeCluster]);
     expect(result).toHaveLength(2);
-    const scores = result.map((c) => c.score).sort((a, b) => b - a);
     // Large cluster should have higher or equal score
     const largeResult = result.find((c) => c.trees.length === 20)!;
     const smallResult = result.find((c) => c.trees.length === 3)!;
