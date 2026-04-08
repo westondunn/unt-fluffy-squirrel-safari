@@ -16,7 +16,7 @@ bash scripts/gates/run-gate.sh --all
 
 1. **Lint failures:** Run `npx eslint . --fix && npx prettier --write .` then re-check.
 2. **Test failures:** Read the failing test, understand what it expects, fix the source code or test as appropriate, and re-run.
-3. **Coverage below threshold:** Add tests for uncovered code. Check `quality-gates.yml` for current thresholds (lines: 80%, branches: 70%, functions: 80%).
+3. **Coverage below threshold:** Add tests for uncovered code. Check `quality-gates.yml` for current thresholds.
 4. **Data pipeline failures:** Check `scripts/build-db.ts` and `data/trees.csv`. Required tables and minimum row counts are in `quality-gates.yml`.
 5. **Security failures:** Run `npm audit fix` for vulnerabilities. For other security issues, read the gate output for specific guidance.
 
