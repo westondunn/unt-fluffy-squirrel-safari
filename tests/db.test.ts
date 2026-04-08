@@ -52,6 +52,12 @@ import {
   getQuests,
   addQuest,
   completeQuest,
+  getPlayer,
+  addScore,
+  incrementStat,
+  updateLastSeen,
+  getSetting,
+  setSetting,
 } from '../src/main/db';
 
 const SCHEMA = `
@@ -393,5 +399,84 @@ describe('completeQuest', () => {
     const completed = quests.find((q) => q.id === quest.id)!;
     expect(completed.status).toBe('completed');
     expect(completed.completed_at).not.toBeNull();
+  });
+});
+
+// ── player ───────────────────────────────────────────────────────────────────
+
+describe('getPlayer', () => {
+  it('returns the player row', () => {
+    const player = getPlayer();
+    expect(player.id).toBe(1);
+    expect(player.name).toBe('Tester');
+    expect(player.level).toBe(1);
+    expect(player.score).toBe(0);
+  });
+});
+
+describe('addScore', () => {
+  it('increments score and xp', () => {
+    const player = addScore(100);
+    expect(player.score).toBe(100);
+    expect(player.xp).toBe(100);
+  });
+
+  it('recalculates level based on new score', () => {
+    const player = addScore(500);
+    // level = floor((0 + 500) / 500) + 1 = 2
+    expect(player.level).toBe(2);
+  });
+
+  it('accumulates across multiple calls', () => {
+    addScore(300);
+    const player = addScore(300);
+    expect(player.score).toBe(600);
+    // level = floor(600 / 500) + 1 = 2
+    expect(player.level).toBe(2);
+  });
+});
+
+describe('incrementStat', () => {
+  it('increments streak by 1', () => {
+    incrementStat('streak');
+    const player = getPlayer();
+    expect(player.streak).toBe(1);
+  });
+
+  it('increments multiple times', () => {
+    incrementStat('streak');
+    incrementStat('streak');
+    incrementStat('streak');
+    const player = getPlayer();
+    expect(player.streak).toBe(3);
+  });
+});
+
+describe('updateLastSeen', () => {
+  it('sets last_seen to a timestamp', () => {
+    updateLastSeen();
+    const player = getPlayer();
+    expect(player.last_seen).not.toBeNull();
+    // Should be a valid ISO string
+    expect(new Date(player.last_seen!).getTime()).not.toBeNaN();
+  });
+});
+
+// ── settings ─────────────────────────────────────────────────────────────────
+
+describe('getSetting / setSetting', () => {
+  it('returns undefined for missing key', () => {
+    expect(getSetting('nonexistent')).toBeUndefined();
+  });
+
+  it('round-trips a value', () => {
+    setSetting('theme', 'dark');
+    expect(getSetting('theme')).toBe('dark');
+  });
+
+  it('upserts on duplicate key', () => {
+    setSetting('theme', 'dark');
+    setSetting('theme', 'light');
+    expect(getSetting('theme')).toBe('light');
   });
 });
