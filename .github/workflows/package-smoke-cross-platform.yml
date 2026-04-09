@@ -18,6 +18,9 @@ concurrency:
   group: package-smoke-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   package:
     name: Package ${{ matrix.label }}
@@ -50,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: npm
 
       - name: Install dependencies
